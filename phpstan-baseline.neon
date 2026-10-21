@@ -1,0 +1,19 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Strict comparison using \!\=\= between ''0'' and ''/'' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: web/app/mu-plugins/filters.php
+
+		-
+			message: '#^Class WPSEO_Slug_Change_Watcher not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: web/app/mu-plugins/suppress-admin-notices.php
+
+		-
+			message: '#^Function app not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: web/app/themes/sage/index.php

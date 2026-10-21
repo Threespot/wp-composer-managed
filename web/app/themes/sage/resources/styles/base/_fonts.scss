@@ -1,0 +1,45 @@
+//------------------------------------------------------------------------
+// Web fonts
+// Note: Only woff2 is required for modern browsers
+// https://css-tricks.com/snippets/css/using-font-face/
+// https://caniuse.com/woff2
+//
+// In the future, we could consider not loading fonts if “data-saver” mode is enabled
+// https://css-tricks.com/responsible-conditional-loading/
+// https://caniuse.com/mdn-css_at-rules_media_prefers-reduced-data
+//------------------------------------------------------------------------
+$is-admin--fonts: false !default;
+
+// We’re using “font-display: fallback” on the public site as a compromise
+// between performance and minimizing the chances of a FOIT or FOUC.
+//
+//   “The browser will hide the text for about 100ms and, if the font
+//   has not yet been downloaded, will use the fallback text. It will
+//   swap to the new font after it is downloaded, but only during a
+//   short swap period (probably 3 seconds).”
+//   https://css-tricks.com/almanac/properties/f/font-display/
+//
+// In the admin, the web font can take longer than 3 sec to load,
+// so we’re switching to “font-display: swap” to allow an unlimited
+// swap window.
+$font-display:  if(sass($is-admin--fonts): swap; else: fallback);
+
+// FIXME: Replace with project web fonts
+
+// Plus Jakarta Sans
+// https://fonts.google.com/specimen/Plus+Jakarta+Sans
+@font-face {
+  font-display: $font-display;
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 200 800;
+  src: url("@fonts/plus-jakarta-sans/plus-jakarta-sans-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: $font-display;
+  font-family: "Plus Jakarta Sans";
+  font-style: italic;
+  font-weight: 200 800;
+  src: url("@fonts/plus-jakarta-sans/plus-jakarta-sans-italic.woff2") format("woff2");
+}

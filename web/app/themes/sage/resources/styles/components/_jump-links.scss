@@ -1,0 +1,212 @@
+//------------------------------------------------------------------------
+// Jump Links (partials/jump-links.blade.php; Figma 21-16243, 21-16343, Event 66-17137)
+// A see-through gray bar that sticks to the top of the window (design answer 6).
+// Desktop: "Jump to", a divider and the links in one row.
+// Below $bp-row: a "Jump to" button opens the links as a menu below the bar (design answer 5,
+// design TBD, so plain styles; modules/expandables.js sets aria-expanded and aria-hidden).
+// The breakpoint is a media query because data-expands-media is one.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.JumpLinks {
+  // One row needs 794px for the member Initiative links (21-16243) and 890px for the six Event
+  // links (66-17137), measured. The bar is 704px wide at 768px and 920px at 984px.
+  // In em, like the header, so a larger browser text size gets the "Jump to" menu instead of a
+  // row that wraps to a taller bar (WCAG 1.4.4). Must match data-expands-media in the partial.
+  $bp-row: $layout-nav-bp-em;
+  $rule-color: rgb(255 255 255 / 50%);// Figma rgba(255,255,255,0.5), the border and the divider
+
+  // Below the admin bar when it's fixed (600px and up). Below 600px the admin bar scrolls
+  // away with the page, so the bar sticks to the top of the window.
+  position: sticky;
+  top: var(--wp-admin--admin-bar--height, 0);
+  z-index: var(--z-index-main);// above the sections, below the header, nav and dialogs
+
+  @media (width < 600px) {
+    top: 0;
+  }
+
+  // Keep jump targets and keyboard focus clear of the bar (WCAG 2.4.11): without this,
+  // Shift+Tab scrolls the focused item to the top of the window, under the bar. The 62px bar
+  // plus 16px (4.875rem, in rem because the bar grows with the browser text size), below the
+  // admin bar while it's fixed. This replaces WordPress's admin bar scroll-padding-top on <html>,
+  // which would otherwise be the only padding.
+  @at-root html:has(#{&}) {
+    scroll-padding-block-start: calc(4.875rem + var(--wp-admin--admin-bar--height, 0px));
+
+    @media (width < 600px) {
+      scroll-padding-block-start: 4.875rem;
+    }
+  }
+
+  // Under a banner (Initiative 21-16243, 21-16343): Figma puts 32px above the bar. Spacing
+  // only, so the bar stays a direct child of the element holding the targets.
+  &--after-banner {
+    margin-block-start: scale-clamp((375px: 16px, $layout-max-width-bp: 32px));
+  }
+
+  // The bar. 90% gray tint with the page blurred behind it, solid where the blur isn't
+  // supported or the visitor asks for less transparency (the text needs a steady background).
+  &-box {
+    backdrop-filter: blur(5px);// Figma backdrop-blur 5px
+    --theme-text-color: #000;
+    background-color: color-mix(in srgb, var(--gray-tint) 90%, transparent);
+    border: 1px solid $rule-color;
+    color: var(--theme-text-color);
+    padding: 18px 20px;// 62px tall with one row of links (see &-target)
+    position: relative;// the menu's containing block, and the toggle's tap area
+
+    // Autoprefixer adds the -webkit- test for Safari 17 and older
+    @supports not (backdrop-filter: blur(1px)) {
+      background-color: var(--gray-tint);
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+      backdrop-filter: none;
+      background-color: var(--gray-tint);
+    }
+
+    @media (width >= #{$bp-row}) {
+      align-items: flex-start;
+      display: flex;
+      gap: 20px;
+    }
+  }// end box
+
+  // "Jump to" at desktop: the "mls link" type (as .link-arrow), not a link.
+  // The divider is its border: 24px tall (the line height), 20px each side.
+  &-label {
+    display: none;
+    font-family: var(--graphik-compact);
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+    line-height: 1.5;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    @media (width >= #{$bp-row}) {
+      border-inline-end: 1px solid $rule-color;
+      display: block;
+      flex-shrink: 0;
+      padding-inline-end: 20px;
+    }
+
+    // Below $bp-row without JavaScript, the label takes the button's place
+    .no-js & {
+      display: block;
+    }
+  }// end label
+
+  // Below $bp-row: the whole bar is the button. Its type and arrow hover come from .link-arrow.
+  // The arrow flips to point up while the menu is open.
+  &-toggle {
+    cursor: pointer;
+    display: block;
+    text-align: start;
+
+    // The whole bar is the tap target
+    &::after {
+      content: "";
+      inset: 0;
+      position: absolute;
+    }
+
+    @media (width >= #{$bp-row}) {
+      display: none;
+    }
+
+    .no-js & {
+      display: none;
+    }
+
+    // .link-arrow sets the icon's opacity transition; this adds the flip
+    .Icon {
+      @media (prefers-reduced-motion: no-preference) {
+        transition: opacity $icon-duration $icon-easing,
+                    transform $icon-duration $icon-easing;
+      }
+    }
+
+    &[aria-expanded="true"] .Icon {
+      transform: scaleY(-1);
+    }
+  }// end toggle
+
+  // Below $bp-row the menu opens over the page, under the bar, so the bar keeps one height
+  // and choosing a link doesn't shift the page while the menu closes.
+  &-panel {
+    @media (width < #{$bp-row}) {
+      @include expandable();
+      background-color: var(--gray-tint);
+      inset-inline: -1px;// line up with the bar's border
+      position: absolute;
+      top: calc(100% + 1px);
+    }
+
+    @media (width >= #{$bp-row}) {
+      flex: 1;
+      min-width: 0;
+    }
+
+    // Without JavaScript the list stays open in the bar
+    .no-js & {
+      background-color: transparent;
+      position: static;
+    }
+
+    // No padding or border here, so the closed panel is 0 tall: they go on the list
+    &-wrap {
+    }
+  }// end panel
+
+  &-list {
+    border: 1px solid $rule-color;
+    border-top-color: rgb(0 0 0 / 10%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 20px;
+
+    @media (width >= #{$bp-row}) {
+      border: 0;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0 16px;// Figma 16px between links
+      padding: 0;
+    }
+
+    .no-js & {
+      border: 0;
+      padding: 8px 0 0;
+
+      @media (width >= #{$bp-row}) {
+        padding: 0;
+      }
+    }
+  }// end list
+
+  &-item {
+  }
+
+  // The arrow shows only on hover and focus (Figma: hidden at rest, its space kept)
+  &-link {
+    display: inline-block;
+    white-space: nowrap;
+
+    &:not(:hover, :focus-visible) .Icon {
+      opacity: 0;
+    }
+  }
+
+  // Jump targets (outside the bar): add the class to each section the links point to.
+  // The room for the bar is the page's scroll padding (above), so the targets add none.
+  &-target {
+    // Focus lands here (tabindex="-1") so the next Tab starts from the section. It isn't a
+    // control, and a ring around a whole section reads as a bug, so it gets none.
+    &:focus {
+      outline: none;
+    }
+  }
+
+}// end JumpLinks

@@ -1,0 +1,25 @@
+//------------------------------------------------------------------------
+// Archive template (#32, Figma 24-21615 and 24-21597)
+// Filters, then a two-column list of listing cards, then the pager.
+// Spacing from the "Issue Archive - List" frame (24-26511): 32px above the
+// filters, the list straight after them, 32px under the list.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Archive {
+  &-wrap {
+    container-type: inline-size;
+    padding-top: 32px;
+  }
+
+  &-pager {
+    margin-bottom: 32px;
+    margin-top: 32px;
+
+    // One page: FacetWP leaves the pager empty, so drop the empty landmark too
+    &:not(:has(.page-numbers)) {
+      display: none;
+    }
+  }
+
+}// end Archive

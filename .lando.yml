@@ -1,0 +1,37 @@
+name: fixme-app-name
+recipe: pantheon
+config:
+  framework: wordpress
+  site: fixme-app-name
+  id: FIXME_pantheon_site_id
+  # The Pantheon recipe reads php_version from pantheon.yml; xdebug is toggled
+  # per-service below.
+  xdebug: false
+events:
+  # Root install also runs `composer theme:install` (Sage's own Composer deps),
+  # mirroring what Pantheon's Integrated Composer build does on every push.
+  post-start:
+    - appserver: composer install --no-interaction
+  # `lando push` replaces Pantheon's database but leaves its caches; clear the
+  # environment that matches the current branch (main -> dev).
+  post-push:
+    - appserver: 'BRANCH=$(git -C /app rev-parse --abbrev-ref HEAD); ENV=$BRANCH; if [ "$ENV" = "main" ] || [ "$ENV" = "master" ]; then ENV=dev; fi; echo "Clearing Pantheon cache for fixme-app-name.$ENV..."; terminus env:clear-cache "fixme-app-name.$ENV"'
+services:
+  appserver:
+    xdebug: debug
+    config:
+      php: .vscode/php.ini
+    build_as_root:
+      # Lando's Pantheon recipe ships Terminus 3.x, whose env:wake can't read
+      # the health check of external-repository sites, so `lando pull` fails
+      # with "Could not reach dev-<site>.pantheonsite.io". Use Terminus 4.
+      - curl -fsSL https://github.com/pantheon-systems/terminus/releases/download/4.3.3/terminus.phar -o /usr/local/bin/terminus
+      - chmod +x /usr/local/bin/terminus
+      # Base-build: keep WP-CLI current.
+      - curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp
+      - chmod +x /usr/local/bin/wp
+  mailhog:
+    type: mailhog
+    portforward: true
+    hogfrom:
+      - appserver

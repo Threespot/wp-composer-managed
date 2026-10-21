@@ -1,0 +1,129 @@
+//------------------------------------------------------------------------
+// Custom WP admin styles applied to admin pages with fields
+//------------------------------------------------------------------------
+// Shared Threespot base vars and mixins
+@use "@threespot/wp-base-styles/vars" as *;
+@use "@threespot/wp-base-styles/mixins" as *;
+
+// Frontline Sass svg-url() funciton
+@use "frontline-sass/src/functions/svg-url" as *;
+
+// Vars
+@use "vars/font-vars" as *;
+
+// Web fonts
+@use "base/fonts" as * with ($is-admin--fonts: true);
+
+// Helper classes (required for “u-richtext”)
+@use "helpers/universal-helpers" as *;
+
+// Shared Threespot base styles
+@use "@threespot/wp-base-styles/base" as *;
+
+// Shared Threespot admin overrides
+@use "@threespot/wp-base-styles/admin-fields" as *;
+
+@media (min-width: $admin-menu-bp) {
+  // Content listing table styles
+  .wp-list-table {
+    // Adjust column widths
+    #author {
+      width: 190px;// adjust to fit most client emails
+    }
+
+    #date {
+      width: 180px;// adjust to fit longest date
+    }
+
+    // Custom taxonomy column
+    // #taxonomy-topic {
+    //   width: 132px;// adjust to fit longest topic
+    // }
+
+    // Truncate author names instead of wrapping
+    .column-author {
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      a {
+        white-space: nowrap;
+      }
+    }
+
+    // Prevent util links from wrapping (below post titles in list views)
+    &.pages,
+    &.posts {
+      td.title {
+        padding-bottom: 30px;
+        position: relative;
+      }
+
+      .row-actions {
+        bottom: 8px;
+        white-space: nowrap;
+      }
+
+      .comment-item:hover .row-actions,
+      .mobile .row-actions,
+      .no-js .row-actions,
+      .row-actions.visible,
+      tr:hover .row-actions {
+        left: 11px;
+      }
+    }
+  }
+
+  // Fix bug with ACF table layout
+  .column-acf-json {
+    position: relative;
+  }
+}
+
+// Custom ACF wysiwyg field styles
+.acf-field-wysiwyg {
+  // Requires adding class in ACF config
+  &.hide-tabs {
+    .wp-editor-tools {
+      display: none;
+    }
+  }
+
+  // Requires adding class in ACF config
+  &.is-short {
+    iframe {
+      height: 70px !important;
+    }
+  }
+}// end acf-field-wysiwyg
+
+// Custom class to hide ACF tooltip icons (for copying var name)
+// This is helpful for fixing occasional layout issues.
+.hide-acf-tooltip .acf-js-tooltip {
+  display: none !important;
+}
+
+// ACF Extended overrides
+//
+// OPTIONAL: Only show 15 min intervals in ACFE time picker fields
+// .ui_tpicker_minute_slider .ui-timepicker-select {
+//   option:not([value="0"], [value="15"], [value="30"], [value="45"]) {
+//     display: none;
+//   }
+// }
+
+// OPTIONAL: Hide seconds dropdown and “Now” button in ACFE time picker fields
+// .ui_tpicker_second_label,
+// .ui_tpicker_second,
+// .ui-datepicker-current {
+//   display: none !important;
+// }
+
+// OPTIONAL: Hide accordion icon position controls
+[data-wp-component="ToolsPanelItem"]:has([aria-label="Icon Position"]) {
+  display: none !important;
+}
+
+// OPTIONAL: Hide file block inline embed field
+.components-tools-panel:has([aria-label="PDF settings options"]) {
+  display: none !important;
+}

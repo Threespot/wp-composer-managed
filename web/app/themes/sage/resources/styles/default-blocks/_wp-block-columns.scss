@@ -1,0 +1,44 @@
+//------------------------------------------------------------------------
+// Default column block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/columns/style.scss
+//
+// NOTE: We’re adding “l-block” class to the columns wrapper,
+//       and “u-richtext” to each column wrapper (see gurenberg.js)
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// Columns wrapper
+.wp-block-columns {
+  --column-gap: 30px;
+  clear: both;
+  gap: var(--column-gap);
+
+  & + & {
+    margin-top: var(--column-gap);
+  }
+
+  &.alignfull,
+  [data-align="full"] & {
+    padding-inline: var(--layout-padding-inline);
+  }
+
+  // This is a custom block style defined in gutenberg.js
+  &.is-style-no-col-gap {
+    gap: 0;
+  }
+}// end wp-block-columns
+
+// Single column wrapper
+.wp-block-column {
+  container-type: inline-size;// for @container queries
+
+  .l-block {
+    &:first-child {
+      margin-top: 0 !important;
+    }
+
+    &:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+}// end wp-block-column

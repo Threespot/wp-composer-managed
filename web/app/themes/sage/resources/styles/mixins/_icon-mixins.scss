@@ -1,0 +1,42 @@
+// -------------------------------------------------------------------------
+// Animated icon sizes and hover movements
+//
+// One entry per SVG in resources/images/icons/ that has moving parts.
+// width/height: the viewBox in Figma pixels (1 unit = 1px at --icon-scale: 1)
+// hover: part selector => transform applied on hover and :focus-visible
+// Sources: Figma Arrow set 184-24703, moving arrow 184-25014 and carousel controls 184-24799
+// -------------------------------------------------------------------------
+@use "sass:list";
+@use "sass:map";
+
+$icon-duration: 200ms;
+$icon-easing: ease-out;
+
+// Hover transforms use uppercase PX so postcss-pxtorem leaves them alone: inside an SVG,
+// translate() is measured in viewBox units, which must not scale with the root font size.
+$icons: (
+  arrow-right: (width: 12.83px, height: 10px, hover: (".Icon-move": translateX(3PX))),
+  arrow-down: (width: 10px, height: 12.65px, hover: (".Icon-move": translateY(2PX))),
+  arrow-up-right: (width: 10.85px, height: 10.77px, hover: (".Icon-move": translate(1PX, -1PX))),
+  download: (width: 13.53px, height: 14.64px, hover: (".Icon-move": translateY(1PX))),
+  moving-arrow: (width: 25px, height: 21px, hover: (".Icon-move": translateX(27PX))),
+  plus: (width: 11px, height: 10.35px, hover: (".Icon-bar--v": scaleX(1.5), ".Icon-bar--h": scaleY(1.5))),
+  carousel-arrow: (width: 24px, height: 27px, hover: (".Icon-move": translateX(-2PX), ".Icon-extra": translateX(1PX))),
+);
+
+// Move the parts of every animated icon inside this element when $state matches.
+// Include it on the link or button that contains the icon.
+// $state: appended to & (e.g. ":has(:hover, :focus-visible)" for stretched-link items)
+// $names: limit the output to some icons, e.g. (arrow-right, arrow-down)
+// Note: The transitions are set once in components/_icon.scss.
+@mixin icon-hover($state: ":is(:hover, :focus-visible)", $names: null) {
+  @each $name, $icon in $icons {
+    @if not $names or list.index($names, $name) {
+      @each $part, $transform in map.get($icon, hover) {
+        &#{$state} .Icon--#{$name} #{$part} {
+          transform: $transform;
+        }
+      }
+    }
+  }
+}

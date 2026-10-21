@@ -1,0 +1,104 @@
+//------------------------------------------------------------------------
+// Banner: the parts every page banner shares (components spec 4.7)
+// Each banner adds its own root class for the rest, e.g. "Banner InitiativeBanner".
+// Figma page instances: 21-16342 and 21-16242 (Initiative), 23-17991 (Campaign),
+// 23-18426 (Resource), 70-21494 (News), 23-21347 (People), 66-17136 (Event)
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Banner {
+  $selector: &;
+  @include banner-background;
+  // Headings take the tint in the public view and black in the member view
+  --banner-heading-color: var(--banner-color-tint);
+  container-type: inline-size;// the title mixins size their text in cqw
+  padding-block: 12px 32px;
+
+  @media (min-width: $banner-columns-bp) {
+    padding-block: 32px;
+  }
+
+  .is-member-view & {
+    --banner-heading-color: var(--banner-text-color);
+  }
+
+  &-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+
+  // Post banners are 536px tall at desktop, with the body at the bottom
+  &--tall #{$selector}-wrap {
+    @media (min-width: $banner-columns-bp) {
+      min-height: 472px;// 536px less the padding
+    }
+  }
+
+  // Title and description, then the supporting information
+  &-body {
+    display: grid;
+    gap: 32px;
+    margin-top: auto;
+
+    @media (min-width: $banner-columns-bp) {
+      align-items: end;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  &-main {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+
+    @media (min-width: $banner-columns-bp) {
+      gap: 16px;
+    }
+  }
+
+  // Figma "Desktop/Detail h1" and "Mobile/Detail h1": Graphik Compact Bold,
+  // 64/68 and 44/48, no letter spacing. post-title() already sets the size,
+  // line height and weight; it's also used outside banners, so the font is set here.
+  &-title {
+    @include post-title;
+    color: var(--banner-heading-color);
+    font-family: var(--graphik-compact);
+
+    // The "Page Title" field can swap one letter for a building icon
+    b {
+      font-family: var(--lyon-icons);
+      font-weight: normal;// the icon font has one weight, so avoid fake bold
+    }
+  }
+
+  &-description {
+    font-size: var(--default-text-scale);
+    line-height: 1.5;
+    text-wrap: pretty;
+
+    & > * + * {
+      margin-top: 1em;
+    }
+
+    a {
+      color: var(--theme-link-color);
+    }
+  }
+
+  &-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  &-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+}// end Banner

@@ -1,0 +1,101 @@
+//------------------------------------------------------------------------
+// Default image block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/image/style.scss
+//
+// <figure class="wp-block-image [aligncenter|alignleft|alignright] size-[full|large|medium|thumbnail] [is-resized]">
+//   <img class="wp-image-123" src="…" srcset="…">
+//   <figcaption class="wp-element-caption">Cpation</figcaption>
+// </figure>
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.wp-block-image {
+  $bp-align: 600px;
+  --floated-horz-margin: 50px;
+  @include layout-block-outset;
+
+  &:not(:first-child) {
+    margin-top: 2em;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 2em;
+  }
+
+  &:not(.alignleft, .alignright) {
+    clear: both;
+  }
+
+  // Hide download/external icons for linked images
+  & > a {
+    &:after {
+      display: none;
+    }
+  }
+
+  // Custom image block style to apply max-height (class added via gutenberg.js)
+  &.is-style-max-height {
+    img {
+      max-height: 540px;
+      object-fit: cover;
+    }
+  }
+
+  figcaption {
+    @include caption;
+    margin-bottom: 0;
+    margin-top: em(36px, $body-text-max-size);
+    text-align: center;
+  }
+
+  &.alignwide {
+    figcaption {
+      padding-inline: var(--layout-padding-inline);
+    }
+  }
+
+  &.alignwide,
+  &.alignfull {
+    figcaption {
+      margin-inline-start: auto;
+      margin-inline-end: auto;
+      max-width: var(--layout-max-width-narrow);
+    }
+  }
+
+  &.alignleft,
+  &.alignright,
+  &.aligncenter {
+    figcaption {
+      text-align: start;
+    }
+  }
+
+  &.alignleft,
+  &.alignright {
+    @media (max-width: $bp-align - 1px) {
+      float: none;
+      margin-inline: auto;
+    }
+
+    @media (min-width: $bp-align) {
+      margin-top: em(7px, $body-text-max-size);// align with text
+    }
+  }
+
+  &.alignleft {
+    @media (min-width: $bp-align) {
+      clear: inline-start;
+      float: inline-start;
+      margin-inline-end: var(--floated-horz-margin);
+    }
+  }
+
+  &.alignright {
+    @media (min-width: $bp-align) {
+      clear: inline-end;
+      float: inline-end;
+      margin-inline-start: var(--floated-horz-margin);
+    }
+  }
+}// end wp-block-image

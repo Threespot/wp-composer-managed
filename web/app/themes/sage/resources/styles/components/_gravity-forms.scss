@@ -1,0 +1,273 @@
+//------------------------------------------------------------------------
+// Gravity Forms, in the site's form styles (vars/_form-vars.scss,
+// mixins/_input-mixins.scss). Gravity Forms' Orbital theme builds its
+// styles from --gf-* variables, and its own rules outweigh ours, so the
+// site's values go into those variables.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.gform-theme--framework {
+  @include default-block-margins;
+
+  // Light Groups and the member view's default Groups set this to white; unset it so Previous
+  // (btn-lite) keeps its blue tint
+  --secondary-button-bg-color: initial;
+
+  // Gravity Forms sets the same variables on the same selector, so these are !important: they
+  // must win whichever stylesheet loads last (a form rendered by a template can load it later).
+
+  // Fields: white, black text, the site's padding. The border is gray at 60%: 4.2:1 on white and
+  // 3.9:1 on the palette tints (member-view Groups), so each field can be seen (WCAG 1.4.11; the
+  // Archive Filters' white dropdowns on a tint use the same 60%). Darker than the site's text fields (30%),
+  // which draw a top rule only.
+  --field-border-color: color-mix(in srgb, var(--gray) 60%, transparent);
+  --gf-ctrl-bg-color: #fff !important;
+  --gf-ctrl-border-color: var(--field-border-color) !important;
+  --gf-ctrl-border-color-focus: var(--input-border-color-focus) !important;
+  --gf-ctrl-border-color-error: var(--input-error-color) !important;
+  --gf-ctrl-border-width: 1px !important;
+  --gf-ctrl-color: var(--default-text-color) !important;
+  --gf-font-family-base: var(--default-font-family) !important;// fields, labels and descriptions
+  --gf-ctrl-font-size: var(--default-text-scale) !important;
+  --gf-ctrl-line-height: 1.5 !important;
+  --gf-ctrl-placeholder-color: color-mix(in srgb, var(--default-text-color) 56%, transparent) !important;// 4.9:1, as the site's fields
+  --gf-ctrl-padding-x: var(--input-padding-horz) !important;
+  --gf-ctrl-padding-y: 12px !important;
+  --gf-ctrl-shadow: none !important;
+  --gf-radius: var(--default-field-radius) !important;
+  --gf-ctrl-transition: border-color 180ms ease !important;
+  // Errors: the site's error colors. Messages use --error-text-color, lighter on dark
+  // backgrounds (see dark-background()); field borders keep --input-error-color, as they sit on
+  // the white field. Gravity Forms tints the error summary from an rgb copy of its red, so those
+  // tints are set from ours.
+  --gf-color-danger: var(--error-text-color) !important;
+  --gf-form-validation-bg-color: transparent !important;// a tint under the text drops it below 4.5:1 on the palette tints
+  --gf-form-validation-border-color: color-mix(in srgb, var(--gf-color-danger) 25%, transparent) !important;
+  --gf-form-validation-heading-icon-bg-color: color-mix(in srgb, var(--gf-color-danger) 5%, transparent) !important;
+  --gf-form-validation-outline-color-focus: color-mix(in srgb, var(--gf-color-danger) 65%, transparent) !important;
+  --gf-field-choice-gap: 18px !important;
+  --gf-form-footer-margin-y-start: 32px !important;
+  // Gravity Forms draws its outline on any :focus, so it's off here and set for keyboard focus below
+  --gf-ctrl-outline-width-focus: 0 !important;
+
+  // Labels (field-label() in mixins/_input-mixins.scss): 14px bold, in the text color, so they
+  // follow dark sections too. !important: the form block sets the label colors inline.
+  --gf-ctrl-label-color-primary: currentColor !important;
+  --gf-ctrl-label-color-secondary: currentColor !important;
+  --gf-ctrl-label-color-tertiary: currentColor !important;
+  --gf-ctrl-label-color-req: var(--required-color, var(--red)) !important;
+  --gf-ctrl-label-font-size-primary: 14px !important;
+  --gf-ctrl-label-font-weight-primary: bold !important;
+  --gf-ctrl-label-line-height-primary: 1.5 !important;
+  --gf-label-space-primary: 4px !important;
+  // Checkbox and radio labels: body text
+  --gf-ctrl-label-font-size-secondary: var(--default-text-scale) !important;
+  // Sub-labels (First, Last, City)
+  --gf-ctrl-label-font-size-tertiary: 14px !important;// the field label's size, Regular, so it stays below the label
+
+  // Descriptions and error messages
+  --gf-ctrl-desc-color: currentColor !important;
+  --gf-ctrl-desc-color-error: var(--error-text-color) !important;
+  --gf-ctrl-desc-font-size: var(--caption-text-size) !important;
+
+  // Keyboard focus: the site's ring (mixins/_focus-mixins.scss). Set on the focused control and on
+  // its wrappers, since Gravity Forms draws some rings on a wrapper (enhanced selects, image choices),
+  // and the color resolves there, so it follows --theme-text-color as the site's ring does.
+  :is(:focus-visible, :has(:focus-visible)) {
+    --gf-ctrl-outline-color-focus: var(--focus-ring-color, var(--theme-text-color)) !important;
+    --gf-ctrl-outline-offset: var(--focus-ring-offset) !important;
+    --gf-ctrl-outline-width-focus: var(--focus-ring-width) !important;
+  }
+
+  .gform_title {
+    @include h2;
+  }
+
+  .gform_description {
+    margin-top: 1em;
+  }
+
+  .gform_heading {
+    margin-block-end: 32px;
+  }
+
+  // Only the label text is a click target, not the empty space beside it
+  label {
+    width: fit-content;
+
+    &[for] {
+      cursor: pointer;
+    }
+  }
+
+  .gfield_required {
+    --gf-ctrl-label-font-weight-req: normal;
+    --gf-ctrl-label-font-size-req: 1em;
+  }
+
+  .gfield_required_text {
+    font-weight: normal;
+  }
+
+  // The asterisk in "* indicates required fields", like each field's
+  .gform_required_legend .gfield_required {
+    color: var(--gf-ctrl-label-color-req) !important;// Gravity Forms' rule has the same weight
+  }
+
+  // Editors add this class to a field (Appearance, Custom CSS Class) for a Regular weight label
+  .lowercase-label :is(label, legend) {
+    font-weight: normal;
+  }
+
+  // Dropdown labels are Regular, as on the site's dropdowns (field-label(), Figma 184-24782)
+  .gfield--type-select .gfield_label {
+    --gf-ctrl-label-font-weight-primary: normal;
+  }
+
+  .gfield--type-captcha label {
+    @include visually-hidden;
+  }
+
+  // File upload: the browser's "Choose File" button, drawn as a gray block
+  .ginput_container_fileupload {
+    input[type="file"] {
+      --gf-local-padding-y: 0;
+    }
+
+    input.large {
+      background:
+        linear-gradient(var(--offwhite), var(--offwhite)) left / 98.5px 100% no-repeat,
+        linear-gradient(var(--field-border-color), var(--field-border-color)) left 98.5px top / 1px 100% no-repeat,
+        #fff;
+
+      @include attention {
+        background:
+          linear-gradient(var(--gray-tint), var(--gray-tint)) left / 98.5px 100% no-repeat,
+          linear-gradient(var(--field-border-color), var(--field-border-color)) left 98.5px top / 1px 100% no-repeat,
+          #fff;
+      }
+    }
+
+    ::-webkit-file-upload-button {
+      background-color: transparent !important;
+      border-right: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  input {
+    --gf-local-height: auto !important;
+
+    // Checkboxes and radio buttons: the border is always there and only its color changes
+    // (blue on hover, focus and when checked), so nothing moves
+    &:is([type="checkbox"], [type="radio"]) {
+      --gf-ctrl-border-color-focus: var(--blue) !important;
+      --gf-ctrl-border-color-hover: var(--blue) !important;
+      --gf-ctrl-choice-check-color: var(--blue);
+      --gf-ctrl-choice-size: 20px;
+      aspect-ratio: 1;
+
+      &:checked {
+        --gf-ctrl-border-color: var(--blue) !important;
+      }
+    }
+
+    &[type="checkbox"] {
+      --gf-ctrl-checkbox-check-radius: 4px !important;
+      --gf-ctrl-checkbox-check-size: 18px;
+      box-sizing: content-box;
+    }
+
+    &[type="radio"] {
+      --gf-ctrl-radio-check-size: 12px;
+    }
+  }
+
+  // Dropdowns: the site's chevron. Gravity Forms' small sizes (Time's AM/PM) are narrow, so the
+  // side padding is 12px here, not the text fields' 20px. Not Multi Select lists, which scroll.
+  select:not([multiple]) {
+    --gf-ctrl-select-padding-x: 12px;// Gravity Forms pads selects from this, not --gf-ctrl-padding-x
+    --gf-ctrl-select-icon: #{svg-url($svg-chev-down, (fill: #000))};
+    --gf-ctrl-select-icon-focus: var(--gf-ctrl-select-icon);
+    --gf-ctrl-select-icon-hover: var(--gf-ctrl-select-icon);
+    --gf-ctrl-select-icon-position: right 12px top 50%;
+    --gf-ctrl-select-icon-size: 14px auto;
+    --gf-local-height: auto !important;
+    @include font-smoothing;
+    overflow: hidden;
+    padding-right: calc(12px + 14px + 8px);// the chevron's margin, the chevron, an 8px gap
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // List field: one bordered box with the add and remove buttons inside
+  .gfield_list_group {
+    background-color: #fff;// a field like the others, so its border shows on dark sections too
+    border: 1px solid var(--field-border-color);
+    border-radius: var(--default-field-radius);
+    padding-right: 10px;
+
+    .gfield_list_group_item {
+      padding: 0;
+
+      input {
+        border: none !important;
+      }
+    }
+
+    button {
+      --gf-local-bg-color: var(--blue) !important;
+    }
+  }
+
+  // Buttons: the site's buttons (button-fill() in mixins/_button-mixins.scss). Submit, Next and
+  // Select All are the Dark button (btn-dark), Previous is the Lite one (btn-lite); other Gravity
+  // Forms buttons keep its own styles. Its button rule outweighs ours and builds every property from
+  // its --gf-ctrl-btn-* variables, so the site's values go into those. As with btn-dark and btn-lite,
+  // the colors follow the section's button vars (light on dark backgrounds).
+  :is(.gform_button, .gform_next_button, .gform_previous_button, button.gfield_choice_all_toggle) {
+    @include font-smoothing;
+    --gf-ctrl-btn-font-family: var(--graphik-compact);
+    --gf-ctrl-btn-font-size: 16px;
+    --gf-ctrl-btn-font-size-sm: 16px;
+    --gf-ctrl-btn-font-weight: bold;
+    --gf-ctrl-btn-letter-spacing: 0.03em;
+    --gf-ctrl-btn-line-height: 1;
+    --gf-ctrl-btn-padding-x: 20px;
+    --gf-ctrl-btn-padding-x-sm: 20px;
+    --gf-ctrl-btn-padding-y: 12px;
+    --gf-ctrl-btn-radius: var(--default-button-radius);
+    --gf-ctrl-btn-shadow: none;
+    --gf-ctrl-btn-shadow-focus: none;
+    --gf-ctrl-btn-shadow-hover: none;
+    --gf-ctrl-btn-text-transform: uppercase;
+    --gf-ctrl-transition: background-color 180ms ease, color 180ms ease;
+  }
+
+  // Dark (button-fill())
+  :is(.gform_button, .gform_next_button, button.gfield_choice_all_toggle) {
+    --gf-ctrl-btn-bg-color-primary: var(--button-bg-color, #000);
+    --gf-ctrl-btn-bg-color-focus-primary: var(--button-hover-bg-color, #000);
+    --gf-ctrl-btn-bg-color-hover-primary: var(--button-hover-bg-color, #000);
+    --gf-ctrl-btn-border-width-primary: 0;
+    --gf-ctrl-btn-color-primary: var(--button-color, #fff);
+    --gf-ctrl-btn-color-focus-primary: var(--button-hover-color, #fff);
+    --gf-ctrl-btn-color-hover-primary: var(--button-hover-color, #fff);
+    // Gravity Forms fills the disabled colors on the wrapper, from its own blue
+    --gf-ctrl-btn-bg-color-disabled-primary: var(--button-bg-color, #000);
+    --gf-ctrl-btn-color-disabled-primary: var(--button-color, #fff);
+  }
+
+  // Lite (button-secondary()). Gravity Forms renders Previous as a secondary button.
+  .gform_previous_button {
+    --gf-ctrl-btn-bg-color-secondary: var(--secondary-button-bg-color, var(--blue-tint));
+    --gf-ctrl-btn-bg-color-focus-secondary: var(--secondary-button-bg-color, color-mix(in srgb, var(--blue-tint) 20%, #fff));
+    --gf-ctrl-btn-bg-color-hover-secondary: var(--secondary-button-bg-color, color-mix(in srgb, var(--blue-tint) 20%, #fff));
+    --gf-ctrl-btn-border-width-secondary: 0;
+    --gf-ctrl-btn-color-secondary: var(--secondary-button-color, #000);
+    --gf-ctrl-btn-color-focus-secondary: var(--secondary-button-color, #000);
+    --gf-ctrl-btn-color-hover-secondary: var(--secondary-button-color, #000);
+    --gf-ctrl-btn-bg-color-disabled-secondary: var(--secondary-button-bg-color, var(--blue-tint));
+    --gf-ctrl-btn-color-disabled-secondary: var(--secondary-button-color, #000);
+  }
+}// end gform-theme--framework

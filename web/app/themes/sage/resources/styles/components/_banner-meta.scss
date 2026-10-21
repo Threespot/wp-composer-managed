@@ -1,0 +1,62 @@
+//------------------------------------------------------------------------
+// Banner Meta: the label and value rows in post banners ("supporting information")
+// <dl class="BannerMeta">, one <div class="BannerMeta-row"> per <dt>/<dd> pair.
+// Rows the design draws without a label keep a visually hidden <dt>.
+// Figma: 21-16342, 21-16242, 23-17991, 66-17136, 70-21494, 23-21347
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.BannerMeta {
+  // Rules: white at 20% on the dark colors (public view, Figma 70-21494, 23-21347),
+  // black at 10% on the tints (member view, Figma 21-16242, 66-17136, 23-18426)
+  --banner-meta-rule-color: color-mix(in srgb, var(--banner-text-color) 20%, transparent);
+  column-gap: 32px;
+  display: grid;
+  font-size: 16px;
+  grid-template-columns: max-content minmax(0, 1fr);
+  line-height: 1.5;
+
+  .is-member-view & {
+    --banner-meta-rule-color: color-mix(in srgb, var(--banner-text-color) 10%, transparent);
+  }
+
+  &-row {
+    border-bottom: 1px solid var(--banner-meta-rule-color);
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    padding-block: 8px;
+
+    // No visible label: the value uses the whole row
+    &--plain {
+      & > :last-child {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  &-label {
+    font-weight: bold;
+  }
+
+  &-value {
+    margin: 0;
+
+    // Plain links only: arrow links (.link-arrow) keep their own style
+    a:not([class]) {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.15em;
+
+      @include attention {
+        text-decoration-thickness: 2px;
+      }
+    }
+
+    &--muted {
+      opacity: 0.7;
+    }
+  }
+
+}// end BannerMeta

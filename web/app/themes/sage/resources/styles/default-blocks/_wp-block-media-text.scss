@@ -1,0 +1,100 @@
+//------------------------------------------------------------------------
+// Default media text block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/media-text/style.scss
+//
+// NOTE: We’re adding “l-block” class to the wrapper (see gutenberg.js)
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.wp-block-media-text {
+  $selector: &;
+  $bp-row: $break-small + 1px;// default WP breakpoint
+  $image-width-percentage: 40%;// excludes full-width blocks
+  $vert-margin: 2em;
+  --col-gap: 30px;
+  --image-min-height: 380px;
+  --padding-bottom: 0;
+  --padding-left: 0;
+  --padding-right: 0;
+  --padding-top: 1em;
+  clear: both;
+  @include default-block-margins;
+
+  // Make fullwidth in mobile if there is a background color
+  &.has-background,
+  &.alignfull {
+    @media (max-width: $bp-row - 1px) {
+      --padding-left: var(--layout-padding-inline);
+      --padding-right: var(--layout-padding-inline);
+      @include layout-fullwidth;
+    }
+  }
+
+  &.has-background {
+    --padding-bottom: 1.5em;
+    --padding-top: 1.5em;
+
+    // OPTIONAL: Remove margin between adjacent blocks with background colors
+    // & + & {
+    //   margin-top: calc(-1 * var(--default-block-margin));
+    // }
+  }
+
+  // Image on left
+  &:not(.has-media-on-the-right) {
+    @media (min-width: $bp-row) {
+      --padding-left: var(--col-gap);
+
+      &:is(.alignfull, .has-background) {
+        --padding-right: var(--layout-padding-inline);
+      }
+    }
+  }
+
+  // Image on right
+  &.has-media-on-the-right {
+    @media (min-width: $bp-row) {
+      --padding-right: var(--col-gap);
+
+      &:is(.alignfull, .has-background) {
+        --padding-left: var(--layout-padding-inline);
+      }
+    }
+  }
+
+  // Image
+  &__media {
+    @media (min-width: $bp-row) {
+      align-self: stretch !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: var(--image-min-height);
+    }
+
+    img {
+      @media (min-width: $bp-row) {
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &[src$=".svg"] {
+        height: auto;
+        max-width: 100%;
+      }
+    }
+  }
+
+  // Content
+  // Note: The u-richtext class is added via wp-base-config
+  // https://github.com/Threespot/wp-base-config/blob/main/src/MuPlugins/BlockConfig.php
+  &__content {
+    container-type: inline-size;// for @container queries
+    padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left) !important;// override default WP styles
+
+    @media (min-width: $bp-row) {
+      --padding-bottom: 1.5em;
+      --padding-top: 1.5em;
+    }
+  }// end content
+}// end wp-block-media-text

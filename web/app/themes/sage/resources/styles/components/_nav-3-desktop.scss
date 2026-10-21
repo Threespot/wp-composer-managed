@@ -1,0 +1,87 @@
+//------------------------------------------------------------------------
+// Desktop Nav (Figma 55-17148): one row along the bottom of the header,
+// split around the logo. The first right-group item pushes the rest right.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Nav {
+  $selector: &;
+
+  @media (width >= #{$layout-nav-bp-em}) {
+    --nav-gap: #{scale-clamp(($layout-nav-bp: 24px, 1366px: 53px))};
+    align-self: end;// the labels' baseline lines up with the logo's bottom edge
+    grid-area: 2 / 1 / 3 / 4;
+
+    &-list {
+      align-items: flex-end;
+      column-gap: var(--nav-gap);
+      display: flex;
+    }
+
+    &-item {
+      position: relative;// the dropdown hangs from it
+
+      &.is-right-start {
+        margin-inline-start: auto;
+      }
+    }
+
+    // Hover arrow (Figma 184-21346, 184-21368): appears 8px under the label, centered
+    // Note: Figma draws no arrow on the member and search-open headers; it shows there too, in white
+    &-arrow {
+      --icon-gap: 0;
+      left: 50%;
+      opacity: 0;
+      position: absolute;
+      top: calc(100% + 8px);
+      transform: translate(-50%, -4px);
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: opacity 200ms ease-out, transform 200ms ease-out;
+      }
+    }
+
+    &-toggle,
+    &-link {
+      &:is(:hover, :focus-visible),
+      &[aria-expanded="true"] {
+        #{$selector}-arrow {
+          opacity: 1;
+          transform: translate(-50%, 0);
+        }
+      }
+    }
+
+    // Panels hang below their item, flush with the header's bottom edge (Figma 184-21391).
+    // DropdownNav sets --dropdown-shift to pull a panel that would overflow back to the right edge (Join Us).
+    &-sublist {
+      @include dropdown-panel;
+      left: 0;
+      position: absolute;
+      top: calc(100% + 32px);// the header has 32px of padding below the nav row
+      translate: var(--dropdown-shift, 0) 0;
+      width: 275px;
+      z-index: var(--z-index-nav);
+
+      // No JS: show a panel while the pointer or focus is inside its item. Hover is needed because
+      // Safari doesn't focus a button on click, so focus alone never opens it for mouse users.
+      .no-js & {
+        display: none;
+
+        // Bridges the 32px gap above the panel, so the pointer keeps :hover on the way down
+        &::before {
+          bottom: 100%;
+          content: "";
+          height: 32px;
+          left: 0;
+          position: absolute;
+          right: 0;
+        }
+      }
+
+      .no-js #{$selector}-item:is(:hover, :focus-within) & {
+        display: grid;
+      }
+    }
+  }
+}// end Nav

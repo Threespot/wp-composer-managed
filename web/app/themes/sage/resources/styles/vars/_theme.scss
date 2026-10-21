@@ -1,0 +1,71 @@
+//------------------------------------------------------------------------
+// Theme vars
+//------------------------------------------------------------------------
+@use "frontline-sass/src/frontline" as *;
+@use "font-vars" as *;
+@use "layout-vars" as *;
+
+$enable-dark-mode: false !default;
+
+:root {
+  // NOTE: Critical CSS vars (i.e. used by JS) must also be added to critical.scss
+  //       just in case JS executes before the CSS Object Model (CSSOM) is ready.
+  --layout-nav-bp: #{$layout-nav-bp};
+
+  // Default color vars
+  // Note: Colors are defined in _color-vars.scss.
+  --default-bg-color: #fff;
+  --default-text-color: #000;
+  --default-link-color: var(--blue);// FIXME: Doesn’t pass WCAG
+  --error-text-color: var(--text-red);
+
+  // These color vars will change based on theme or block background color (see _block-color-helpers.scss)
+  --accent-color: var(--blue);// used by blocks, e.g. details, accordion, quotes
+  --accent-color-text: #fff;
+  --theme-bg-color: var(--default-bg-color);
+  --theme-link-color: var(--default-link-color);
+  --theme-text-color: var(--default-text-color);
+
+  // Default theme font vars
+  // Note: Font stacks are defined in _font-vars.scss
+  --default-font-family: var(--fixme-webfont);
+  --default-font-weight: normal;
+  --default-line-height: 1.4;
+  --default-large-font-size: #{scale-clamp((375px: 20px, 600px: 28px))};
+  --default-text-scale: #{scale-clamp((375px: $body-text-min-size, $layout-text-scale-end-bp: $body-text-max-size))};
+
+  // Default form vars
+  --default-button-radius: 100vmax;
+  --default-field-radius: 0;
+
+  // Reset default WP font-size vars
+  --wp--preset--font-size--medium: var(--default-text-scale);
+  --wp--preset--font-size--large: var(--default-large-font-size);
+
+  // Caption text vars
+  --caption-line-height: 1.25;
+  --caption-margin-top: 0.5em;
+  --caption-text-color: var(--theme-text-color);
+  --caption-text-size: 16px;
+
+  @media (min-width: $layout-text-scale-end-bp) {
+    --default-line-height: 1.5;
+  }
+
+  // Default block margins
+  --default-block-margin: #{scale-clamp((375px: 50px, $layout-max-width-bp: 80px))};
+
+  // Dark mode colors
+  // Note: Update $enable-dark-mode--globals in main.scss to enable/disable
+  @if $enable-dark-mode {
+    @media (prefers-color-scheme: dark) {
+      --default-bg-color: #000;
+      --default-text-color: #fff;
+      --caption-text-color: currentColor;
+      --highlight-bg-color: #fff;
+      --highlight-text-color: #000;
+      --pre-bg-color: #2e2e2e;
+      --table-highlight-color: #2e2e2e;
+    }
+  }
+}

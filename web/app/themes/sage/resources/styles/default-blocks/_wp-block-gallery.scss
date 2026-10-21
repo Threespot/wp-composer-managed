@@ -1,0 +1,148 @@
+//------------------------------------------------------------------------
+// Default gallery block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/gallery/style.scss
+//
+// <figure class="wp-block-gallery l-block alignwide has-nested-images columns-default is-cropped wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
+//   <figure class="wp-block-image size-large">
+//     <img class="wp-image-413" loading="lazy" decoding="async" width="640" height="426" data-id="413" src="…" alt="" srcset="…" sizes="…">
+//     <figcaption class="wp-element-caption">Image caption text</figcaption>
+//   </figure>
+//   <figure class="wp-block-image size-large">
+//     <img class="wp-image-413" loading="lazy" decoding="async" width="640" height="426" data-id="413" src="…" alt="" srcset="…" sizes="…">
+//     <figcaption class="wp-element-caption">Image caption text</figcaption>
+//   </figure>
+//   <figure class="wp-block-image size-large">
+//     <img class="wp-image-413" loading="lazy" decoding="async" width="640" height="426" data-id="413" src="…" alt="" srcset="…" sizes="…">
+//     <figcaption class="wp-element-caption">Image caption text</figcaption>
+//   </figure>
+//   <figcaption class="blocks-gallery-caption wp-element-caption">
+//     Gallery caption text
+//   </figcaption>
+// </figure>
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// Note: Duplicate selector to override default WP styles without “!important”
+.wp-block-gallery {
+  $bp-end-scale: $layout-max-width-narrow-bp;
+  --gallery-caption-font-size: 17px;
+  --gallery-caption-margin-top: 1em;
+  --wp--style--gallery-gap-default: #{scale-clamp((375px: 30px, $bp-end-scale: 40px))};// redefine default WP gap
+  clear: both;
+  @include default-block-margins;
+
+  // 1. Override default WP styles to fix bug in Firefox
+  &.has-nested-images {
+    .wp-block-image {
+      img {
+        height: auto !important;// [1]
+      }
+
+      // Hide default image blur effect in WP 6.7
+      &:has(figcaption):before {
+        display: none !important;
+      }
+    }
+
+    // Image caption
+    // Show below images instead of on top on hover
+    // Note: Use !important to override WP inline styles
+    .wp-element-caption:not(.blocks-gallery-caption) {
+      background: none !important;
+      color: var(--caption-text-color) !important;
+      font-size: var(--caption-text-size) !important;
+      line-height: var(--caption-line-height) !important;
+      margin-top: var(--caption-margin-top) !important;
+      max-height: none;
+      padding: 0 !important;
+      position: static !important;
+      text-align: left !important;
+      text-shadow: none !important;// override default WP styles
+    }// end caption
+  }
+
+  // Custom logo styles (shared styles for all versions)
+  &[class*="is-style-logos"] {
+    --column-width: 140px;
+    --img-max-height: 180px;
+    --col-gap: #{scale-clamp((375px: 30px, $bp-end-scale: 40px))};
+    --row-gap: #{scale-clamp((375px: 30px, $bp-end-scale: 40px))};
+    gap: var(--row-gap) var(--col-gap) !important;
+
+    @media (min-width: 768px) {
+      --column-width: 200px;
+    }
+
+    @media (min-width: $bp-end-scale) {
+      --column-width: 240px;
+    }
+
+    // Prevent logos from touching the viewport edge
+    &.alignfull {
+      padding-inline: var(--layout-padding-inline);
+    }
+
+    // Images
+    figure {
+      margin-bottom: 0 !important;// override WP defaults
+      max-width: var(--column-width) !important;
+
+      img {
+        max-height: var(--img-max-height);
+        object-fit: contain !important;
+      }
+    }
+  }// end logos
+
+  // Custom logo styles (smaller images, centered)
+  &.is-style-logos-centered {
+    flex-wrap: wrap;
+    justify-content: center;
+
+    // Images
+    figure {
+      width: auto !important;
+    }
+
+    // Caption
+    figcaption {
+      width: 100%;
+    }
+  }// end logos
+
+  // Custom logo grid style (uses grid to align by column, left aligned when wraps)
+  // 1. Use !important to override default WP admin styles
+  &.is-style-logos-grid {
+    display: grid !important;// [1]
+    grid-template-columns: repeat(auto-fill, minmax(var(--column-width), 1fr)) !important;// [1]
+
+    // Images
+    figure {
+      width: 100% !important;
+    }
+
+    // Caption
+    figcaption {
+      align-self: start;// prevent negative top margin from increasing the height
+      grid-column: 1 / -1;// force caption to be on its own row
+      width: 100%;
+    }
+  }// end logo-grid
+
+  // Gallery caption (annoyingly uses different class naming convention)
+  .blocks-gallery-caption {
+    font-size: var(--gallery-caption-font-size);
+    font-weight: 500;
+    margin-top: calc(-1 * var(--row-gap, var(--wp--style--gallery-gap-default)));
+    padding-top: var(--gallery-caption-margin-top);
+
+    // Set caption max-width in full-width layout
+    // NOTE: We have to use padding because we need to keep the
+    //       width at 100% in order to force it to be in a new row.
+    @include root-add('.alignfull') {
+      // margin-inline: auto;
+      // max-width: var(--layout-max-width-narrow);
+      padding-inline: calc(50% - var(--layout-max-width-narrow) * 0.5);
+    }
+  }// end blocks-gallery-caption
+}// end wp-block-gallery

@@ -1,150 +1,180 @@
-# Composer-enabled WordPress template
+# fixme-app-name
 
-[![Actively Maintained](https://img.shields.io/badge/Pantheon-Minimal_Support-yellow?logo=pantheon&color=FFDC28)](https://pantheon.io/docs/oss-support-levels#minimal-support)
-[![GitHub Release](https://img.shields.io/github/v/release/pantheon-systems/wordpress-composer-managed)](https://github.com/pantheon-upstreams/wordpress-composer-managed)
+fixme-project-name: a Composer-managed WordPress site hosted on Pantheon.
 
-This is Pantheon's recommended starting point for forking new [WordPress](https://wordpress.org) upstreams that work with the Platform's Integrated Composer build process.
+- **Repo:** https://github.com/Threespot/fixme-app-name (private)
+- **Pantheon dashboard:** https://dashboard.pantheon.io/sites/FIXME_pantheon_site_id
+- **Live:** https://live-fixme-app-name.pantheonsite.io/
+- **Test:** https://test-fixme-app-name.pantheonsite.io/
+- **Dev:** https://dev-fixme-app-name.pantheonsite.io/
+- **Local:** https://fixme-app-name.lndo.site/
 
-Unlike with other Pantheon upstreams, the WordPress core install, which you are unlikely to adjust while building sites, is not in the main branch of the repository. Instead, it is referenced as dependencies within [Roots/Bedrock](https://roots.io/bedrock/) that are installed by [Composer](https://getcomposer.org).
+> **Starter / upstream:** this repo was created from [`Threespot/wp-composer-managed`](https://github.com/Threespot/wp-composer-managed), Threespot's Pantheon custom upstream (a fork of Pantheon's [`wordpress-composer-managed`](https://github.com/pantheon-systems/wordpress-composer-managed) with the Threespot base build and theme). Placeholders (`fixme-app-name`, `fixme-project-name`, `fixme-domain`, `FIXME_pantheon_site_id`) are filled in by `composer replace-fixme`. See [Starting a new site](#starting-a-new-site-from-this-upstream) and [Maintaining the upstream](#maintaining-the-upstream) at the end.
 
-## Early Access software
+## How this project is built
 
-A product in Early Access denotes a new project or feature set that is in development and available for a limited audience. Some features are stable, but the product is only partially complete and development is still in progress. For more information on support for Early Access projects, refer to our [documentation](https://pantheon.io/docs/guides/support/early-access/).
+This site uses Pantheon's current tooling, not the deprecated Terminus Build Tools / CircleCI setup used by older Threespot sites.
 
-Want to participate in the Early Access program? [Fill out this request form.](https://docs.google.com/forms/d/e/1FAIpQLSe5WvxnzA7_U7B4clhhIYsPxI7DXkmQC-Y8J6pXmrbHYPzviw/viewform?usp=sf_link)
+| Piece | What it does |
+|---|---|
+| [`Threespot/wp-composer-managed`](https://github.com/Threespot/wp-composer-managed) | The upstream: Pantheon's `wordpress-composer-managed` plus the Threespot base build. A Bedrock layout: WordPress core in `web/wp`, plugins/themes/mu-plugins in `web/app`, config in `config/` and `.env`. |
+| [External repository](https://docs.pantheon.io/guides/external-repositories) | GitHub is the only code repo. Pantheon's GitHub App deploys from it. There is no Pantheon git remote to push to. |
+| [Integrated Composer](https://docs.pantheon.io/guides/integrated-composer) | Pantheon runs `composer install --no-dev` on every push (`build_step: true`). The root `post-install-cmd` also installs the Sage theme's Composer deps. |
+| [Frontend asset builds](https://docs.pantheon.io/frontend-builds) | Pantheon installs the theme's Node deps (Yarn 4 via the committed `.yarn/releases`) and runs `build` in `web/app/themes/sage` on every push (`frontend_build` in `pantheon.yml`). Compiled assets are never committed. |
+| [`threespot/wp-base-config`](https://github.com/threespot/wp-base-config) | Threespot's shared mu-plugin config (admin polish, Acorn storage on Pantheon, CPT autoloading, helpers). Loaded by `web/app/mu-plugins/threespot-wp-base-config.php`. |
+| [Sage 11](https://roots.io/sage/) + Threespot layer | Theme at `web/app/themes/sage`: Threespot's [wordline `base-build`](https://github.com/Threespot/wordline/tree/base-build) on current Sage 11, plus generic components from nmhc. Vite + SCSS, Yarn 4. |
 
-## Powered by Bedrock
+### Branches and environments
 
-<p align="left">
-  <a href="https://roots.io/bedrock/">
-    <img alt="Bedrock" src="https://cdn.roots.io/app/uploads/logo-bedrock.svg" height="50">
-  </a>
-</p>
+| Git | Pantheon |
+|---|---|
+| Push or merge to `main` | Builds and deploys to **Dev** |
+| Open a pull request | Creates a **Multidev** for the branch |
+| `composer deploy:test` | Promotes Dev to **Test** and clears its cache |
+| `composer deploy:live` | Promotes Test to **Live** and clears its cache |
 
+The external repository integration doesn't support SFTP mode. All code changes go through git.
 
-[Bedrock](https://roots.io/bedrock/) is a modern WordPress stack that helps you get started with the best development tools and project structure.
+## Local development
 
-Much of the philosophy behind Bedrock is inspired by the [Twelve-Factor App](http://12factor.net/) methodology including the [WordPress specific version](https://roots.io/twelve-factor-wordpress/).
+### Prerequisites
 
-## Features
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) and [Lando](https://lando.dev/) 3.x
+- [Terminus](https://docs.pantheon.io/terminus/install) 4.x, logged in (`terminus auth:whoami`)
+- [Composer](https://getcomposer.org/) 2
+- Node 24 (see `.tool-versions`, e.g. via [asdf](https://asdf-vm.com/))
+- Write access to this repo and membership in the Pantheon site
 
-- Better folder structure
-- Dependency management with [Composer](https://getcomposer.org)
-- Easy WordPress configuration with environment specific files
-- Environment variables with [Dotenv](https://github.com/vlucas/phpdotenv)
-- Autoloader for mu-plugins (use regular plugins as mu-plugins)
-- Enhanced security with separated web root
+PHP 8.3 is required. If your host PHP is older, run Composer through Lando (`lando composer …`), which uses PHP 8.3.
 
-## How to use this project
-There are two main ways to interact with this project template. **Using the Pantheon-maintained WordPress Composer Managed upstream** or **forking this repository to create a custom upstream.**
+### First-time setup
 
-### Using the Pantheon WordPress Composer Managed upstream (recommended)
-
-1. Use Terminus to create a site from the Pantheon upstream:
-```
-terminus site:create --org ORG --region REGION -- <site_name> <label> "WordPress (Composer Managed)"
-```
-1. In the Dev environment, click **Visit Development Site** and follow the prompts to complete the CMS installation.
-2. [Clone the site locally](https://pantheon.io/docs/local-development#get-the-code) and run `composer install`.
-
-### Fork [this repository](https://github.com/pantheon-upstreams/wordpress-composer-managed) to create a custom upstream (advanced)
-
-**Note:** It's highly recommended that you use the Pantheon-maintained upstream in favor of creating and managing a custom upstream so you can be sure to receive the latest updates. Managing your own custom upstream means that you assume ownership of the upstream and all changes made to it and assumes that you will manage all updates to the upstream.
-
-1. Fork the [`pantheon-upstreams` version of this repository](https://github.com/pantheon-upstreams/wordpress-composer-managed) into your own (or your organization's) GitHub profile.
-2. Create a branch off of `main` called `master` and set this to the default branch for your custom upstream.
-3. [Add a new Custom Upstream](https://pantheon.io/docs/guides/custom-upstream/create-custom-upstream#connect-repository-to-pantheon) on the Pantheon Dashboard.
-4. Create a new WordPress site from the Upstream.
-
-#### On the use of `master` for custom upstreams
-We acknowledge and apologize for the continued use of the `master` branch name. We understand that the use of the word `master` is offensive and hurtful to people in our community, and changing branch names to `main` has been on our roadmap for a long time. We strive to be an [inclusive platform](https://pantheon.io/docs/inclusive-language) and we know that until we are able to completely rename all of our `master` branch names to something less offensive, we still have work to do. Unfortunately in this context, at a platform level, the use of `master` is hard-coded as the expected default branch name and therefore, when creating custom upstreams off of this repository (which uses `main` by default), a `master` branch is necessary for the platform to recognize the upstream without errors or the assistance of Customer Support. We hope this is a temporary solution and that the platform-level changes can happen soon, and we appreciate your continued patience as we transition our default branch names. Alternately, you can use a [CI-based build workflow](https://pantheon.io/docs/guides/wordpress-composer/create-wp-site-composer-ci-auto-test) to automate pushing your code to `master` on the Pantheon side, but keep the `main` branch naming scheme (or any other branch name) in your custom upstream's repository.
-
-## Using Roots Bedrock
-
-### Environment Variables
-
-Bedrock makes use of an `.env` file to store environment variables. Pantheon takes care of many of these variabled in `.env.pantheon`. You may set your own environment variables in a new `.env` or environment variables that are local-only in `.env.local` using the `.env.example` as a guide. Wrap values that may contain non-alphanumeric characters with quotes, or they may be incorrectly parsed.
-
-- Database variables
-  - `DB_NAME` - Database name
-  - `DB_USER` - Database user
-  - `DB_PASSWORD` - Database password
-  - `DB_HOST` - Database host
-  - Optionally, you can define `DATABASE_URL` for using a DSN instead of using the variables above (e.g. `mysql://user:password@127.0.0.1:3306/db_name`)
-- `WP_ENV` - Set to environment (`development`, `staging`, `production`)
-- `WP_HOME` - Full URL to WordPress home (https://example.com)
-- `WP_SITEURL` - Full URL to WordPress including subdirectory (https://example.com/wp)
-- `AUTH_KEY`, `SECURE_AUTH_KEY`, `LOGGED_IN_KEY`, `NONCE_KEY`, `AUTH_SALT`, `SECURE_AUTH_SALT`, `LOGGED_IN_SALT`, `NONCE_SALT`
-  - Generate with [wp-cli-dotenv-command](https://github.com/aaemnnosttv/wp-cli-dotenv-command)
-  - Regenerate with [Bedrock's WordPress salts generator](https://roots.io/salts.html)
-
-### WordPress Config
-
-The `wp-config.php` file is located in the `web` directory. As with other WordPress sites on Pantheon, much of this is taken care of for you in `wp-config-pantheon.php`. Application-level configuration takes place in `config/application.php`. This can be referenced as a guide to understand how the constants are set up and how the `.env` files work, but modifying this file may result in merge conflicts and is not recommended. Any configuration changes should be made to your `wp-config.php` file directly.
-
-You can learn more about WordPress configuration with Bedrock in the [Bedrock Configuration docs](https://docs.roots.io/bedrock/master/configuration/).
-
-### Understanding the WordPress codebase
-
-Bedrock installs WordPress as a required package so updates can be managed by Composer. As such, the contents of the `wp-content` directory have been moved outside the WordPress codebase so changes can be made safely to files within those directories without conflicts.
-
-* Theme are installed into `web/app/themes/`.
-* Plugins are installed into `web/app/plugins`.
-* Must-use plugins are installed into `web/app/mu-plugins`.
-* The WordPress admin dashboard is available at `https://example.com/wp/wp-admin/`
-
-### Using Composer to manage plugins and themes
-
-[Packagist](https://packagist.org) is a repository of Composer packages that are available by default to projects managed by Composer. Packagist libraries receive updates from their source GitHub repositories automatically.
-
-[WP Packages](https://wp-packages.org) is a Packagist-like mirror of the WordPress.org [plugin](https://wordpress.org/plugins) and [theme](https://wordpress.org/themes) repositories and is included with Bedrock out of the box.
-
-You may install packages from Packagist or WP Packages without any additional configuration using `composer require`.
-
-#### Requiring a package from Packagist
-
-Some WordPress developers push their packages to Packagist in addition to the WordPress plugin and theme repositories. In this way, it may be beneficial to pull those packages directly from Packagist to get the latest code directly from the source.
-
-```
-composer require yoast/wordpress-seo
+```shell
+git clone git@github.com:Threespot/fixme-app-name.git
+cd fixme-app-name
+cp .env.example .env            # then paste fresh salts from https://roots.io/salts.html
+lando start                     # boots containers and runs `composer install` (root + theme)
+lando pull --code=none --database=dev --files=dev
+cd web/app/themes/sage && yarn install && yarn build
 ```
 
-Packages that are flagged as `wordpress-plugin`, `wordpress-theme` or `wordpress-muplugin` in their `composer.json` files will be installed automatically in the appropriate `web/app/` directory by Composer.
+Then visit https://fixme-app-name.lndo.site/.
 
-#### Requiring a package from WP Packages
+### Theme development (Vite)
 
-For all other plugins and themes that are not managed on Packagist, you can use `composer require` as well, using `wp-plugin` or `wp-theme` as the vendor and the plugin or theme slug as the package name.
+The theme's Vite, ESLint, Stylelint and PostCSS configs are symlinks into `vendor/threespot/wp-base-config/dist/`, so run the root `composer install` (or `lando start`) first.
 
-```
-composer require wp-theme/twentytwentyfive
-```
-
-```
-composer require wp-plugin/advanced-custom-fields
+```shell
+cd web/app/themes/sage
+yarn start         # Vite dev server with HMR at https://fixme-app-name.lndo.site
+yarn build         # production build (the same command Pantheon runs)
 ```
 
-### Using Roots Sage starter theme
+### Premium plugins and Composer credentials
 
-We've included a Sage Install script that can be run via Composer. This will install the Sage starter theme from Roots, ensure all dependencies are installed, and adds a `post-install-cmd` hook to the `composer.json`. For more information see [Installing Sage](docs/Installing-Sage.md). The command to run the script is below.
+ACF Pro, Admin Columns Pro, Gravity Forms and Object Cache Pro install from their vendors' Composer repositories, which need credentials:
+
+- **Locally:** copy the `auth.json` block from the 1Password note "COMPOSER_AUTH and auth.json for local dev" (Technology vault) to `auth.json` in the repo root. It's gitignored. Run Composer via `lando composer …`.
+- **On Pantheon:** the same JSON is the site secret `COMPOSER_AUTH` (type `env`, scope `ic`), which Integrated Composer reads on every build. `OCP_LICENSE` and `ACF_PRO_LICENSE` are site secrets (type `runtime`, scope `web`) read by `config/application.php`. Org-level secrets did not reach this site's builds, so set them per site:
+
+  ```shell
+  terminus secret:site:set <site> COMPOSER_AUTH "$(jq -c . auth.json)" --type=env --scope=ic
+  terminus secret:site:set <site> OCP_LICENSE <token> --type=runtime --scope=web
+  ```
+- **GitHub Actions:** the repo secret `COMPOSER_AUTH` (same JSON).
+
+### Adding plugins
+
+Add WordPress.org plugins through Composer from [wp-packages](https://wp-packages.org) (`wp-plugin/<slug>`):
+
+```shell
+lando composer require wp-plugin/<slug>
+```
+
+Commit `composer.json` and `composer.lock`. Pantheon installs the plugin on deploy.
+
+The Threespot standard plugins live in `upstream-configuration/composer.json` (the upstream's package), so the root `composer.json` stays this site's own. Package repositories (premium vendors, `threespot/wp-base-config`) must stay in the root `composer.json`: Composer ignores repositories declared in dependencies. Don't commit anything in `web/app/plugins/` unless it's a custom plugin that isn't on Composer (and add a `!web/app/plugins/<name>` rule to `.gitignore`).
+
+### Custom post types and taxonomies
+
+`threespot/wp-base-config` autoloads one file per type from:
 
 ```
-composer install-sage
+web/app/mu-plugins/
+├── custom-post-types/post-types/
+└── custom-taxonomies/taxonomies/
 ```
 
-## Contributing
+See the [wp-base-config docs](https://github.com/threespot/wp-base-config#registering-custom-post-types-and-taxonomies).
 
-Contributions are welcome in the form of GitHub pull requests. However, the `pantheon-upstreams/wordpress-composer-managed` repository is a mirror that does not directly accept pull requests.
+### Checks and tests
 
-Instead, to propose a change, please fork [pantheon-systems/wordpress-composer-managed](https://github.com/pantheon-systems/wordpress-composer-managed) and submit a PR to that repository.
+Run from the repo root through Lando (PHP 8.3). These are the same checks GitHub Actions runs on every PR (`.github/workflows/static-checks.yml`):
 
-Feature or bugfix development branches and pull requests should originate from and be submitted against the `default` branch. Please note that the `main` branch is the main _testing_ branch and exists as a clone of the default branch for use in testing automation. 
+```shell
+lando composer ci          # lint + phpcs + phpstan + phpunit
+lando composer lint        # php -l on our tracked PHP in web/app (skips plugins)
+lando composer phpcs       # Pantheon-WP-Minimum (phpcs.xml.dist); fails on errors, reports warnings
+lando composer phpcbf      # auto-fix what phpcs can
+lando composer phpstan     # level 5 with WordPress + ACF stubs (phpstan.neon.dist + baseline)
+lando composer unit-test   # PHPUnit + Brain Monkey (tests/Unit)
+```
 
-## Community
+GitHub Actions needs the repo secret `COMPOSER_AUTH` (same JSON as `auth.json`) to install the premium plugins.
 
-There are large, thriving communities in both the Roots ecosystem and the Pantheon community that you can reach out to if you have any questions. 
+### Visual regression
 
-- Join the [Pantheon Community Slack](https://join.slack.com/t/pantheon-community/shared_invite/zt-1e1reft3q-UXHfFovNWlUkBxodEkExBQ)
-- Join the Roots community on Discord by [sponsoring them on GitHub](https://github.com/sponsors/roots)
-- Participate on the [Roots Discourse](https://discourse.roots.io/).
-- Follow [@rootswp](https://twitter.com/rootswp) and [@getpantheon](https://twitter.com/getpantheon) on Twitter
+[`@threespot/visual-regression`](https://github.com/threespot/visual-regression) (Playwright). Scenarios live in `visual-regression/scenarios.js`.
 
+```shell
+yarn install && yarn vrt:install
+yarn vrt:test      # compares Pantheon dev against Lando
+yarn vrt:report
+```
+
+### Example content
+
+`threespot/wp-fixtures` is a dev dependency: `lando wp threespot fixtures load`, then `lando push --code=none --files=none --database=dev` to share it.
+
+### Logs
+
+`composer collect-logs -- live` downloads the PHP, nginx and MySQL logs for an environment into `logs/` (gitignored).
+
+## Deploying
+
+1. Open a PR. Pantheon builds a Multidev for it; check it there.
+2. Merge to `main`. Pantheon builds and deploys to Dev.
+3. `lando composer deploy:test` promotes to Test.
+4. `lando composer deploy:live` promotes to Live.
+
+## Starting a new site from this upstream
+
+Full guide: awesome-threespot, *Pantheon WordPress Starter*. In short:
+
+```shell
+printf '0\n' | terminus site:create <app-name> "<Project Name>" <threespot-upstream> \
+  --org=threespot --vcs-provider=github --vcs-org=Threespot \
+  --repository-name=<app-name> --visibility=private --skip-clone-repo
+# add the site secrets (COMPOSER_AUTH, OCP_LICENSE, ACF_PRO_LICENSE), terminus redis:enable, install WordPress
+git clone git@github.com:Threespot/<app-name>.git && cd <app-name>
+composer replace-fixme -- --app=<app-name> --name="<Project Name>" --domain=<www.example.org>
+lando start
+git add -A && git commit -m "Set up <app-name>" && git push
+```
+
+This upstream ships **with** a `composer.lock` (unlike Pantheon's): without one, Pantheon's build would have to resolve `threespot/wp-base-config` through the GitHub API, which fails unauthenticated. After an upstream update that changes dependencies, run `lando composer update --lock` and commit.
+
+## Maintaining the upstream
+
+*(Applies to `Threespot/wp-composer-managed` itself; delete this section in site repos if you like.)*
+
+- `default` mirrors Pantheon's upstream; `main` carries the Threespot layer and is what Pantheon serves to sites.
+- Pull Pantheon's updates:
+
+  ```shell
+  git remote add pantheon https://github.com/pantheon-systems/wordpress-composer-managed.git
+  git fetch pantheon && git checkout default && git merge --ff-only pantheon/default && git push origin default
+  git checkout main && git merge default    # resolve; keep our deletions of Pantheon's CI/devops files
+  ```
+- Shared packages go in `upstream-configuration/composer.json`; new premium/VCS repositories go in the root `composer.json`. Then regenerate and commit `composer.lock` (needs `auth.json`; run Composer with a GitHub token so `threespot/*` VCS packages resolve).
+- Keep project-specific values as `fixme-*` placeholders (see `scripts/replace-fixme.php`).

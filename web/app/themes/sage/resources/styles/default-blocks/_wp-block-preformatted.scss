@@ -1,0 +1,15 @@
+//------------------------------------------------------------------------
+// Default preformatted block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/preformatted/style.scss
+// <pre class="wp-block-preformatted">…</pre>
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.wp-block-preformatted {
+  --default-block-margin: 2em;
+  clear: both;
+  font-family: var(--monospace);
+  font-size: inherit;
+  line-height: 1;
+  @include default-block-margins;
+}

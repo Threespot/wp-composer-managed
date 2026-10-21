@@ -1,0 +1,34 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+
+    # Project-owned PHP: our mu-plugins and the Sage theme.
+    paths:
+        - web/app/mu-plugins
+        - web/app/themes/sage/app
+        - web/app/themes/sage/config
+        - web/app/themes/sage/functions.php
+        - web/app/themes/sage/index.php
+
+    # Acorn (Roots\Acorn\*) and Illuminate types resolve from the root vendor;
+    # the theme autoloader adds the theme's own App\ namespace. `composer
+    # install` at the root runs `composer theme:install`, so both exist.
+    bootstrapFiles:
+        - web/app/themes/sage/vendor/autoload.php
+
+    # ACF Pro stubs so get_field(), the_field(), have_rows() etc. resolve.
+    scanFiles:
+        - vendor/php-stubs/acf-pro-stubs/acf-pro-stubs.php
+
+    excludePaths:
+        - web/wp/*
+        - web/app/plugins/*
+        - web/app/themes/twentytwentyfive/*
+        - web/app/mu-plugins/bedrock-disallow-indexing/*
+        - web/app/mu-plugins/pantheon-mu-plugin/*
+        - vendor/*
+
+    # WordPress is loosely typed. Don't fail on PHPDoc types we can't fully trust.
+    treatPhpDocTypesAsCertain: false

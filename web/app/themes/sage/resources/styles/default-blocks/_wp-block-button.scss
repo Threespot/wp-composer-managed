@@ -1,0 +1,84 @@
+//------------------------------------------------------------------------
+// Default button block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/buttons/style.scss
+//
+// Example markup:
+// <div class="wp-block-buttons is-content-justification-[left|center|right|space-between]">
+//   <div class="wp-block-button">
+//     <a class="wp-block-button__link" href="/">Button Example</a>
+//   </div>
+// </div>
+//
+// Note: WP 5.7 and before uses different alignment classes:
+// <div class="wp-block-buttons [alignleft|aligncenter|alignright]">
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// Buttons wrapper
+// 1. Only required for hard-coded button blocks. Button blocks added in Gutenberg
+//    each get an inline <style> tag that target a unique class for the block
+//    (e.g. .wp-container-1) with these styles, and any custom alignment styles.
+.wp-block-buttons {
+  display: flex;// [1]
+  flex-wrap: wrap;// [1]
+  gap: 1em;
+
+  // Default margins
+  // Note: Use :where() to reduce specificity so other styles can override
+  @at-root {
+    :where(&:not(:first-child)) {
+      margin-top: 1em;
+    }
+
+    :where(&:not(:last-child)) {
+      margin-bottom: 1em;
+    }
+  }
+
+  // Cancel out this backwards-compatibility rule
+  // stylelint-disable indentation
+	&:not(
+		.is-content-justification-space-between,
+		.is-content-justification-right,
+		.is-content-justification-left,
+		.is-content-justification-center
+	) .wp-block-button.aligncenter {
+	// stylelint-enable indentation
+    width: auto;
+  }
+}// end wp-block-buttons
+
+// Individual button
+// Note: The button class name differs from the parent wrapper
+//       so we’re using @t-root in order to keep it nested.
+.wp-block-button {
+  $button-selector: &;
+  display: flex;// shrink box to fit button to vertically align link buttons
+
+  #{$button-selector}__link {
+    @include button-icon;
+  }
+
+  // Only apply default button styles when no “is-style” class is present
+  &:not(.is-style-outline, .is-style-link) {
+    #{$button-selector}__link {
+      @include button-default;
+    }
+  }
+
+  // Optional: Custom button style
+  &.is-style-outline {
+    #{$button-selector}__link {
+      @include button-outline;
+    }
+  }
+
+  // Link button style with arrow icon
+  &.is-style-link {
+    #{$button-selector}__link {
+      @include button-link;
+      @include link-arrow;
+      @include link-icon;// override arrow if external/download
+    }
+  }
+}// end wp-block-button

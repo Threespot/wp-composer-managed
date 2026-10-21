@@ -1,0 +1,73 @@
+//------------------------------------------------------------------------
+// Title Banner (Default Banner 1)
+// Figma: 10-6170 and 24-21617 (desktop), 19-14763 (mobile)
+// The shared parts are in _banner.scss.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// State A to State B (spec C4): the title and description fade in and rise 8px.
+// The banner is at its final height from the start, so nothing below it moves.
+@keyframes title-banner-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.TitleBanner {
+  $selector: &;
+  display: grid;
+  min-height: 400px;// Figma mobile
+
+  @media (min-width: $banner-columns-bp) {
+    padding-bottom: 64px;
+  }
+
+  &-wrap {
+    gap: 32px;
+    width: 100%;
+
+    @media (min-width: $banner-columns-bp) {
+      gap: 100px;
+    }
+  }
+
+  &-title-wrap {
+    margin-top: auto;
+
+    // With reduced motion the title shows at once (State B)
+    @media (prefers-reduced-motion: no-preference) {
+      #{$selector}--animate & {
+        animation: title-banner-fade-in 400ms ease-out 150ms both;
+      }
+    }
+  }
+
+  &-title {
+    @include page-title;
+    color: var(--banner-heading-color);
+    max-width: 800px;
+  }
+
+  &-description {
+    font-size: var(--default-text-scale);
+    line-height: 1.5;
+    margin-top: 16px;
+    max-width: 636px;
+    text-wrap: pretty;
+
+    & > * + * {
+      margin-top: 1em;
+    }
+
+    a {
+      color: var(--theme-link-color);
+    }
+  }
+
+}// end TitleBanner

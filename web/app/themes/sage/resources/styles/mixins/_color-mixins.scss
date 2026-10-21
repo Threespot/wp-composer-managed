@@ -1,0 +1,50 @@
+// -------------------------------------------------------------------------
+// Color mixins
+// -------------------------------------------------------------------------
+@use "frontline-sass/src/frontline" as *;
+
+@mixin dark-background() {
+  @include font-smoothing;
+  --theme-link-color: #fff;
+  --theme-text-color: #fff;
+  --required-color: currentColor;// required-field asterisk uses the text color
+  --error-text-color: var(--text-red-light);// --text-red is under 4.5:1 on the dark colors
+  // --accent-color: var(--blue);// OPTIONAL: Change for dark backgrounds
+  // Default button
+  --button-bg-color: var(--blue-tint);
+  --button-color: #000;
+  --button-hover-bg-color: color-mix(in srgb, var(--blue-tint) 20%, #fff);
+  --button-hover-color: #000;
+  // Secondary button: back to its blue tint, in case a light section around this one set it to white
+  --secondary-button-bg-color: initial;
+}
+
+@mixin light-background() {
+  --theme-text-color: var(--default-text-color);
+  --error-text-color: var(--text-red);// undo dark-background()'s lighter red
+  --required-color: var(--red);
+  // Secondary button style
+  --secondary-button-bg-color: #fff;// button-secondary() also reads it for the hover background
+}
+
+// Background that follows the page's banner color (banners, footer)
+// Links and text take --banner-text-color, which passes on every dark color and tint
+@mixin banner-background() {
+  --theme-link-color: var(--banner-text-color);
+  --theme-text-color: var(--banner-text-color);
+  background-color: var(--banner-color);
+  color: var(--theme-text-color);
+
+  // Required-field asterisk: the (white) text color on the dark banner colors.
+  // The member view shows the tint with black text, so the asterisk stays red there.
+  :where(html:not(.is-member-view)) & {
+    --error-text-color: var(--text-red-light);
+    --required-color: currentColor;
+  }
+
+  // Links follow the banner text color. :where() keeps this rule at the
+  // weight of a bare "a", so any class (buttons, components) sets its own color.
+  :where(&) a {
+    color: var(--theme-link-color);
+  }
+}

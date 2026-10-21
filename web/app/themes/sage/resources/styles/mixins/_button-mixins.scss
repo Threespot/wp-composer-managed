@@ -1,0 +1,164 @@
+// -------------------------------------------------------------------------
+// Button Styles
+// -------------------------------------------------------------------------
+@use "frontline-sass/src/frontline" as *;
+@use "@vars/svg-icons" as *;
+@use "@mixins/link-mixins" as *;
+@use "@mixins/icon-mixins" as *;
+
+// FIXME: Update button style to match design
+@mixin button-fill() {
+  @include font-smoothing;
+  background-color: var(--button-bg-color, var(--blue));
+  border-radius: var(--default-button-radius);
+  color: var(--button-color, #fff);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  padding: 11px 16px;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+
+  @include button-attention {
+    background-color: var(--button-hover-bg-color, var(--blue-dark));
+    color: var(--button-hover-color, #fff);
+    text-decoration: none;// for link tags
+  }
+}
+
+// OPTIONAL: Create mixins for color variations
+// NOTE: Create new `--secondary-button` vars so we can adjust the colors for dark backgrounds
+//       without affecting the default button styles (see _block-color-helpers.scss)
+// @mixin button-secondary {
+//   --button-bg-color: var(--secondary-button-bg-color, var(--blue-light));
+//   --button-color: var(--secondary-button-color, var(--text-blue-dark));
+//   --button-hover-bg-color: var(--secondary-button-hover-bg--color, var(--blue));
+//   --button-hover-color: var(--secondary-button-hover-color, var(--text-blue-dark));
+//   --button-underline-color: var(--secondary-button-underline-color, currentColor);
+// }
+
+// FIXME: Update button style to match design
+@mixin button-outline() {
+  @include font-smoothing;
+  background-color: transparent;
+  border: 1.5px solid var(--button-outline-color, var(--blue-dark));
+  border-radius: var(--default-button-radius);
+  color: var(--button-outline-color, var(--blue-dark));
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  padding: 9.5px 16px;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+
+  @include button-attention {
+    background-color: var(--button-outline-color, var(--blue-dark));
+    color: var(--button-outline-hover-color, #fff);
+    text-decoration: none;// for link tags
+  }
+}
+
+// Custom block style to make buttons appear like links
+// 1. Reset default button styles
+// 2. Reset default padding but keep some vert padding to increase click target
+@mixin button-link() {
+  background-color: transparent !important;// [1]
+  border-radius: 0 !important;// [1]
+  line-height: 1.25;// [1]
+  padding: 5px 0;// [2]
+  @include link-hover-underline-animated;
+}
+
+@mixin button-add-icon($icon-name, $icon-size, $icon-margin, $a11y-text) {
+  // NOTE: This isn’t standard behavior and may confuse assistive-device users.
+  //       However it may be helpful in certain use cases so we left it.
+  //
+  // Add visually-hidden text using :before element for screen readers
+  // @if $a11y-text {
+  //   &:before {
+  //     clip: rect(0 0 0 0) !important;
+  //     clip-path: inset(50%) !important;
+  //     content: $a11y-text;
+  //     display: inline-block;// required for visually-hidden styles
+  //     height: 1px !important;
+  //     margin: -1px !important;
+  //     overflow: hidden !important;
+  //     padding: 0 !important;
+  //     white-space: nowrap !important;
+  //     width: 1px !important;
+  //   }
+  // }
+
+  @supports (mask-size: contain) {
+    align-items: center;
+    display: inline-flex;
+
+    // Use SVG mask to add icon so it can inherit the color
+    // https://jsfiddle.net/34rmz5k7/2/
+    &:after {
+      background: currentColor;// this is the icon color
+      content: '';
+      flex-shrink: 0;
+      font-size: inherit;
+      height: $icon-size;
+      margin-left: $icon-margin;
+      mask-image: svg-url($icon-name, (fill: #000)), linear-gradient(transparent, transparent);
+      mask-position: right center;
+      mask-repeat: no-repeat;
+      mask-size: contain;
+      width: $icon-size;
+    }
+  }
+}
+
+// Append an icon based on the URL
+@mixin button-icon() {
+  // External links
+  // Use :where() to keep specificity low so we can override when external link is also a download
+  @include is-external-href {
+    @include button-add-icon(
+      $icon-name: $svg-external,
+      $icon-size: 0.7em,
+      $icon-margin: 0.75ch,
+      $a11y-text: 'external,'
+    );
+  }
+
+  // Use download icon for internal links to files in media library
+  @include is-download-href {
+    @include button-add-icon(
+      $icon-name: $svg-download,
+      $icon-size: 1em,
+      $icon-margin: 0.75ch,
+      $a11y-text: 'download'
+    );
+  }
+}
+
+// Default button styles
+@mixin button-default() {
+  @include button-fill;
+}
+
+// Added from nmhc (generic component dependency)
+$button-duration: 250ms;
+$button-easing: ease-out;
+// The button's background, painted on ::before and clipped short of the icon
+// space at rest (--button-clip), so it can grow into that space on hover.
+// The element needs position and isolation; button-animated-icon() sets them.
+// Also used by .FillButtonCard-button-label, whose link must stay static.
+@mixin button-grow-background() {
+  &::before {
+    background-color: var(--button-bg-color, #000);
+    border-radius: inherit;
+    clip-path: inset(0 var(--button-clip, 0px) 0 0);
+    content: '';
+    inset: 0;
+    position: absolute;
+    z-index: -1;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: clip-path $button-duration $button-easing;
+    }
+  }
+}

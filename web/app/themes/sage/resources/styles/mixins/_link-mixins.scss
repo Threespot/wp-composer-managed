@@ -1,0 +1,230 @@
+// -------------------------------------------------------------------------
+// Link Styles
+// -------------------------------------------------------------------------
+@use "frontline-sass/src/frontline" as *;
+@use "@vars/svg-icons" as *;
+@use "icon-mixins" as *;
+
+// EXAMPLE: Link with underline, animates away on hover
+// --link-color
+// --link-underline-width
+@mixin link-underline() {
+  background-image: linear-gradient(to bottom, currentColor, currentColor);
+  background-position: right bottom;
+  background-repeat: no-repeat;
+  background-size: 100% var(--link-underline-width, 1.5px);
+  color: var(--link-color, var(--theme-link-color));
+  line-height: 1.3;
+  text-decoration: none;
+  transition: background-size 300ms ease;
+
+  @include attention {
+    background-size: 0% var(--link-underline-width, 1.5px);
+  }
+}
+
+// EXAMPLE: Link underlined on hover, animates from left to right
+// --link-color
+// --link-underline-width
+@mixin link-hover-underline-animated() {
+  background-image: linear-gradient(to bottom, currentColor, currentColor);
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  background-size: 0% var(--link-underline-width, 1.5px);
+  color: var(--link-color, var(--theme-link-color));
+  line-height: 1.3;
+  text-decoration: none;
+  transition: background-size 300ms ease;
+
+  @include attention {
+    background-size: 100% var(--link-underline-width, 1.5px);
+  }
+}
+
+// EXAMPLE: Underline only on hover/focus
+// --link-color
+// --link-underline-color
+// --link-underline-offset
+// --link-underline-width
+// --link-underline-width-hover
+//
+// 1. Browsers don’t currently support transitioning “text-decoration-thickness”
+//    but it is supported in the CSS Text Decoration Module Level 4 spec.
+@mixin link-hover-underline() {
+  color: var(--link-color, var(--theme-link-color));
+  text-decoration: none;
+  transition: color 180ms ease,
+              text-decoration-color 180ms ease,
+              text-underline-offset 180ms ease,
+              text-decoration-thickness 180ms ease;// [1]
+
+  // Inherit custom block text color
+  .has-text-color & {
+    color: var(--theme-link-color);
+  }
+
+  // Customize the text-decoration style
+  @supports (text-decoration-thickness: 0px) {
+    text-decoration-color: var(--link-underline-color, transparent);
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--link-underline-width, 1.5px);
+    text-underline-offset: var(--link-underline-offset, 3px);
+  }
+
+  @include attention {
+    text-decoration-color: var(--link-underline-color-hover, currentColor);
+  }
+}
+
+// EXAMPLE: Thin underline that gets thicker on hover
+// --link-color
+// --link-underline-color
+// --link-underline-offset
+// --link-underline-width
+// --link-underline-width-hover
+//
+// 1. Browsers don’t currently support transitioning “text-decoration-thickness”
+//    but it is supported in the CSS Text Decoration Module Level 4 spec.
+// @mixin link-underline() {
+//   color: var(--link-color, var(--theme-link-color));
+//   text-decoration: none;
+//   transition: color 180ms ease, text-decoration-thickness 180ms ease;// [1]
+//
+//   // Customize the text-decoration style
+//   @supports (text-decoration-thickness: 1px) {
+//     text-decoration-color: var(--link-underline-color, currentColor);
+//     text-decoration-line: underline;
+//     text-decoration-thickness: var(--link-underline-width, 1.5px);
+//     text-underline-offset: var(--link-underline-offset, 3px);
+//   }
+//
+//   @include attention {
+//     --link-underline-width: var(--link-underline-width-hover, 2.5px);
+//   }
+// }
+
+
+@mixin link-add-icon($icon-name, $icon-width, $a11y-text: false) {
+  // NOTE: This isn’t standard behavior and may confuse assistive-device users.
+  //       However it may be helpful in certain use cases so we left it.
+  //
+  // Add visually-hidden text using :before element for screen readers
+  // @if $a11y-text {
+  //   &:before {
+  //     clip: rect(0 0 0 0) !important;
+  //     clip-path: inset(50%) !important;
+  //     content: $a11y-text;
+  //     display: inline-block;// required for visually-hidden styles
+  //     height: 1px !important;
+  //     margin: -1px !important;
+  //     overflow: hidden !important;
+  //     padding: 0 !important;
+  //     white-space: nowrap !important;
+  //     width: 1px !important;
+  //   }
+  // }
+
+  // Use SVG mask to add icon so it can inherit the color
+  // https://jsfiddle.net/34rmz5k7/2/
+  @supports (mask-size: contain) {
+    // 1. Must set “display: inline;” to prevent icon from wrapping by itself
+    // 2. Use padding instead of width to prevent icon from wrapping by itself
+    &:after {
+      background-color: var(--icon-color, currentColor);// this is the icon color
+      content: '';
+      display: inline;// [1]
+      font-size: inherit;
+      margin-left: 0.25em;
+      margin-right: 0.2em;
+      mask-image: svg-url($icon-name), linear-gradient(transparent, transparent);
+      mask-position: left center;
+      mask-repeat: no-repeat;
+      mask-size: $icon-width;
+      padding-left: $icon-width;// [2]
+      transition: background-color 150ms ease-in-out;
+      vertical-align: baseline;
+    }
+  }
+}
+
+// Append arrow icon to link
+@mixin link-arrow() {
+  @include link-hover-underline-animated;
+  @include link-add-icon(
+    $icon-name: $svg-arrow-right,
+    $icon-width: 1.1em,
+  );
+}
+
+// Append an icon based on the URL
+@mixin link-icon() {
+  // External links
+  // Use :where() to keep specificity low so we can override when external link is also a download
+  @include is-external-href {
+    @include link-add-icon(
+      $icon-name: $svg-external,
+      $icon-width: 0.6em,
+      // $a11y-text: 'external,'
+    );
+  }
+
+  // Downloads
+  // Note: We’re using `href*=` instead of `href$=` to account for
+  //       external links with query params. Technically, these
+  //       edge cases would incorrectly be styled as downloads
+  //       but they seem highly unlikely:
+  //       - https://example.org/not-a-file?foo=bar.pdf
+  //       - https://www.pdf.example.org/not-a-file
+  // 1. Use download icon for internal links to files in media library
+  @include is-download-href {
+    @include link-add-icon(
+      $icon-name: $svg-download,
+      $icon-width: 0.8em,
+      // $a11y-text: 'download'
+    );
+  }
+}
+
+// Default link styles
+@mixin link-default() {
+  @include link-underline;
+}
+
+// Added from nmhc (generic component dependency)
+// Last line link (Figma 184-24995): the arrow and its space are hidden at rest
+// Set the type with the heading class or mixin on the same element.
+// $state: appended to & (e.g. ":has(:hover, :focus-visible)" for stretched-link cards)
+// $size: medium (1.5x arrow, h4/h5) or large (2x arrow, h3)
+@mixin last-line-link($state: ":is(:hover, :focus-visible)", $size: medium) {
+  @if $size != medium and $size != large {
+    @error "last-line-link: $size must be medium or large, got #{$size}.";
+  }
+
+  --icon-gap: 8px;
+  --icon-scale: 1.5;
+  color: inherit;
+  text-decoration: none;
+
+  @if $size == large {
+    --icon-scale: 2;
+  }
+
+  // Disable links in editor
+  :where(.block-editor-iframe__html, .wp-admin) & {
+    pointer-events: none;
+  }
+
+  .Icon {
+    opacity: 0;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity $icon-duration $icon-easing;
+    }
+  }
+
+  &#{$state} .Icon {
+    opacity: 1;
+  }
+
+  @include icon-hover($state, (arrow-right, arrow-up-right, download));
+}

@@ -1,0 +1,22 @@
+//------------------------------------------------------------------------
+// Custom WP login page styles
+//------------------------------------------------------------------------
+// Includes Frontline plus project vars, functions, and mixins
+@use "@styles/globals" as * with ($is-admin--globals: false);
+@use "vars/svg-icons" as *;
+
+body {
+  // --wp-admin-theme-color: mediumvioletred !important;// button, input border
+  // --wp-admin-theme-color-darker-10: mediumvioletred !important;// button hover
+  // --wp-admin-theme-color-darker-20: mediumvioletred !important;// button active
+}
+
+#login h1 a {
+  background-image: svg-url($svg-wp-logo, (fill: #3c434a));
+  // background-image: url('~@images/example-logo.png');
+  transition: opacity 180ms ease;
+
+  @include attention {
+    opacity: 0.75;
+  }
+}

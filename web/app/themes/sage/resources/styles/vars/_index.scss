@@ -1,0 +1,13 @@
+$enable-dark-mode--base: false !default;
+
+// Include all var files here
+@forward "color-vars";
+@forward "font-vars";
+@forward "form-vars";
+@forward "layout-vars";
+@forward "svg-icons";
+// Note: Create new “$enable-dark-mode” var to avoid conflicts
+@forward "theme" with (
+  $enable-dark-mode: $enable-dark-mode--base,
+);
+@forward "z-index";

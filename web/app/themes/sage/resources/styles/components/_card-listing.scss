@@ -1,0 +1,164 @@
+//------------------------------------------------------------------------
+// Listing card (Figma "Listing Style" 184-23687, mobile 338-21875)
+//
+// Below 768px (viewport) and in cards narrower than 600px (Figma Mobile, 343): text, then a
+// 222x148 image, left-aligned (D6). Every card puts its image below the text on mobile
+// (Ted, 2026-10-14).
+// From 768px, in a card 600px or wider (Figma "Card Style", 635): the image on the right of
+// the text, 187x125. From 1000px (Figma "List Style", 1302): the image is 240x160.
+// The title and the image link to the post; the rest of the card isn't clickable. Hover
+// or focus on the title, or hover on the image: the top rule darkens, the arrow fades in
+// and the "M" house shape cuts into the image. A card with no title link (e.g. locked)
+// has no hover effects.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.ListingCard {
+  $selector: &;
+  @include card-root;
+  // Hover effects show only while the title link is hovered or focused, or the image link is
+  // hovered (Ted, 2026-10-15). A card with no title link has no image link either, so it shows none.
+  $trigger: ":has(#{$selector}-link:is(:hover, :focus-visible), a#{$selector}-image:hover)";
+  @include card-arrow($trigger);
+  @include card-rule(var(--banner-color-tint), var(--banner-color-dark), $trigger);// Figma tint, then dark on hover (184-23758)
+
+  // Locked member-only event (Figma 24-21586): greyed out, not clickable. It has no title
+  // link, so the $trigger above shows no hover effects.
+  &--locked {
+    opacity: 0.6;
+
+    // The meta is already at 70%, so on a locked card it would land at #949494
+    // (3:1 on white). At full color it is #666 at the card's 60%: 5.74:1.
+    #{$selector}-meta {
+      color: inherit;
+    }
+  }
+
+  &-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-block: 16px;
+  }
+
+  &-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-inline-end: 8px;
+  }
+
+  &-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &-tag {
+  }
+
+  &-title {
+    --heading-size: #{$card-title-size-narrow};
+    @include h4;
+  }
+
+  &-link {
+    @include card-link($stretch: false);
+  }
+
+  &-icon {
+  }
+
+  &-excerpt {
+    @include card-excerpt;
+  }
+
+  &-meta {
+    @include card-meta;
+    font-size: 12px;// Figma Mobile
+  }
+
+  &-date,
+  &-location {
+  }
+
+  &-topics {
+  }
+
+  &-topic {
+    @include card-inner-link($raised: false);
+  }
+
+  &-image {
+    @include card-image-box;
+    flex-shrink: 0;
+    width: 222px;
+  }
+
+  &-image-img {
+  }
+
+  &-mask {
+    @include card-house-mask($selector, $depth: 23%, $state: $trigger);
+  }
+
+  @container (min-width: 600px) {
+    &-wrap {
+      padding-block: 32px;
+    }
+
+    &-text {
+      gap: 10px;
+      padding-inline-end: 16px;
+    }
+
+    &-tags {
+      gap: 16px;
+    }
+
+    &-title {
+      --heading-size: #{$card-title-size-wide};
+    }
+
+    &-excerpt {
+      @include card-excerpt($wide: true);
+    }
+
+    &-meta {
+      font-size: 14px;
+    }
+  }
+
+  // A viewport query, not a container one: below 768px ("mobile" for card images, Ted
+  // 2026-10-14) every card puts its image below the text, however wide the card is.
+  @media (min-width: $layout-card-image-bp) {
+    @container (min-width: 600px) {
+      &-wrap {
+        align-items: flex-start;
+        flex-direction: row;
+        gap: 32px;
+      }
+
+      &-text {
+        flex: 1;
+      }
+
+      &-image {
+        width: 187px;
+      }
+    }
+
+    @container (min-width: 1000px) {
+      &-image {
+        width: 240px;
+      }
+    }
+  }
+
+}// end ListingCard

@@ -1,0 +1,52 @@
+//------------------------------------------------------------------------
+// Nav (shared by the desktop and mobile layouts)
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Nav {
+  .hide-desktop {
+    @media (width >= #{$layout-nav-bp-em}) {
+      display: none !important;
+    }
+  }
+
+  .hide-mobile {
+    @media (width < #{$layout-nav-bp-em}) {
+      display: none !important;
+    }
+  }
+
+  // Top-level labels (Figma 184-21346): Graphik Compact Bold 20, no underline or color change
+  &-toggle,
+  &-link {
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    display: block;// so links and buttons share one box model
+    font: inherit;
+    font-family: var(--graphik-compact);
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+    position: relative;// the hover arrow hangs from it
+    text-decoration: none;
+  }
+
+  // Figma trims the labels to the cap height, so the label's bottom is its baseline
+  // (browsers without text-box keep the 20px line box)
+  &-label {
+    display: block;
+    text-box: trim-both cap alphabetic;
+  }// end label
+
+  // Dropdowns, toggled by DropdownNav (modules/dropdown-nav.js)
+  &-sublist {
+    --expand-easing: ease-out;
+    --expand-speed: 300ms;
+    @include expandable();
+    @include dropdown-items;
+  }// end sublist
+
+}// end Nav

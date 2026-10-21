@@ -1,0 +1,48 @@
+@use "sass:math";
+// -------------------------------------------------------------------------
+// Layout Vars
+//------------------------------------------------------------------------
+@use "frontline-sass/src/frontline" as *;
+
+$layout-max-width: 1140px;// FIXME
+$layout-max-width-narrow: 840px;// FIXME
+
+// Horizontal padding used by l-padding helper class
+$layout-padding-min: 16px;
+$layout-padding-max: 32px;
+$layout-padding-min-bp: 375px;
+$layout-padding-max-bp: 640px;
+
+// Calculate when wrappers reach their max-width
+$layout-max-width-bp: $layout-max-width + ($layout-padding-max * 2);
+$layout-max-width-narrow-bp: $layout-max-width-narrow + ($layout-padding-max * 2);
+
+// Text scaling breakpoint
+$layout-text-scale-end-bp: $layout-max-width-narrow-bp;
+
+// Navigation
+$layout-nav-bp: 1000px;
+
+// OPTIONAL: Allow left/right-aligned blocks to shift outside of content well
+//           Used by layout-block-outset() mixin
+$layout-outset-start-bp: $layout-max-width-narrow-bp;// or $bp-align, whichever is larger
+$layout-outset-end-bp: $layout-max-width-bp + ($layout-padding-max * 2);
+$layout-outset-width: ($layout-max-width-bp - $layout-max-width-narrow) * 0.5;
+
+:root {
+  --layout-max-width: #{$layout-max-width};
+  --layout-max-width-narrow: #{$layout-max-width-narrow};
+  --layout-padding-block: #{scale-clamp(($layout-padding-min-bp: 40px, $layout-padding-max-bp: 60px))};
+  --layout-padding-inline: #{scale-clamp((
+      $layout-padding-min-bp: $layout-padding-min,
+      $layout-padding-max-bp: $layout-padding-max
+  ))};
+}
+
+// Added with the nmhc generic components (archive filters, nav, cards, banners)
+// The nav breakpoint in em, so it scales with the visitor's default text size (WCAG 1.4.4)
+$layout-nav-bp-em: math.div($layout-nav-bp, 16px) * 1em;
+// Below this width card images sit below the text
+$layout-card-image-bp: 768px;// FIXME: confirm per design
+// Page banners switch from one column to two
+$banner-columns-bp: 1024px;// FIXME: confirm per design

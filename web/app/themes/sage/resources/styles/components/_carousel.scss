@@ -1,0 +1,24 @@
+//------------------------------------------------------------------------
+// Carousel base (modules/carousel.js, built on Embla)
+// Blocks style their own slides (width, gap). This file only covers the parts
+// every carousel shares, found by the data attributes the script reads.
+//
+// Without JS the viewport scrolls sideways. The script adds .is-carousel-active
+// to the root, and Embla then clips and moves the track itself. When a breakpoint
+// turns the carousel off (data-carousel-below / -above) the class is removed, so
+// the viewport scrolls again: blocks restack the track in their own CSS.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+[data-carousel-viewport] {
+  overflow-x: auto;
+
+  .is-carousel-active & {
+    overflow: hidden;
+  }
+}
+
+// Embla moves a flex container
+[data-carousel-track] {
+  display: flex;
+}

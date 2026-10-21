@@ -1,0 +1,52 @@
+# Site-level Pantheon config. Overrides pantheon.upstream.yml.
+# https://docs.pantheon.io/pantheon-yml
+api_version: 1
+web_docroot: true
+php_version: 8.3
+enforce_https: full+subdomains
+
+database:
+  version: 10.6
+
+# Integrated Composer: Pantheon runs `composer install --no-dev` on every push.
+# The root post-install-cmd also installs the Sage theme's Composer deps.
+build_step: true
+
+# Frontend asset builds: Pantheon installs Node deps and runs `build` in each path on
+# every push, so compiled assets are never committed. The theme uses Yarn 4: Pantheon
+# picks yarn from yarn.lock and the committed .yarn/releases + yarnPath in
+# .yarnrc.yml select Yarn 4.14.1. https://docs.pantheon.io/frontend-builds
+frontend_build:
+  enabled: true
+  paths:
+    - path: web/app/themes/sage
+      node_version: 24
+      build_command: build
+
+# Object cache (Redis), used by Object Cache Pro.
+# https://docs.pantheon.io/object-cache/wordpress
+object_cache:
+  version: 6.2
+
+# Quicksilver hooks. No pushback script: GitHub is the only code repo.
+workflows:
+  deploy:
+    after:
+      - type: webphp
+        description: 'Purge Cloudflare after deploy'
+        script: private/scripts/quicksilver/threespot-cloudflare-purge/purge-cloudflare.php
+  clear_cache:
+    after:
+      - type: webphp
+        description: 'Purge Cloudflare after cache clear'
+        script: private/scripts/quicksilver/threespot-cloudflare-purge/purge-cloudflare.php
+  sync_code:
+    after:
+      - type: webphp
+        description: 'Purge Cloudflare after code sync'
+        script: private/scripts/quicksilver/threespot-cloudflare-purge/purge-cloudflare.php
+  clone_database:
+    after:
+      - type: webphp
+        description: 'Flush the object cache after a database clone'
+        script: private/scripts/quicksilver/threespot-object-cache-flush/flush-object-cache.php

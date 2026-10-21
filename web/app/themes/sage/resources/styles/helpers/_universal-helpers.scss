@@ -1,0 +1,23 @@
+//------------------------------------------------------------------------
+// Universal helper classes
+//
+// Add !important to all properties to force immutability
+// http://csswizardry.com/2016/05/the-importance-of-important/
+//
+// stylelint-disable:disable no-important
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.u {
+  &-richtext { @include richtext; }
+
+  &-hide { display: none !important; }
+
+  // Hide text visually but keep it accessible to screen readers
+  &-screenreader { @include visually-hidden; }
+
+  // Prevent text from wrapping
+  &-nowrap {
+    @include no-wrap;
+  }
+}// end u

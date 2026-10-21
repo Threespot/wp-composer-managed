@@ -1,0 +1,86 @@
+//------------------------------------------------------------------------
+// Pagination (Figma 184-24900)
+// Note: Markup is generated using paginate_links()
+// https://developer.wordpress.org/reference/functions/paginate_links/
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Pagination {
+  $bp-full: 505px;
+
+  // Row with a top rule, items 24px apart
+  // Left aligned on mobile and centered on desktop
+  &-list {
+    align-items: center;
+    border-top: 1px solid var(--gray-tint);
+    color: var(--theme-text-color);
+    display: flex;
+    flex-wrap: wrap;
+    font-family: var(--graphik-compact);
+    font-size: 16px;
+    font-weight: bold;
+    gap: 8px 24px;// FIXME: guess, no Figma value for the 8px row gap (node 184-24900)
+    letter-spacing: 0.03em;
+    line-height: 1.5;
+    padding-block: 16px;
+    text-transform: uppercase;
+  }// end list
+
+  &-desktop &-list {
+    justify-content: center;
+  }
+
+  &-mobile {
+    @media (min-width: $bp-full) {
+      display: none;
+    }
+  }// end -mobile
+
+  &-desktop {
+    @media (max-width: $bp-full - 1px) {
+      display: none;
+    }
+  }// end -desktop
+
+  // Note: Links have the same class name as the parent list
+  .page-numbers {
+    // Numbers, dots and current page (not the Previous and Next links or the <ul>)
+    &:is(a, span):not(.prev, .next) {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    // Underline the page number links on hover and focus
+    // (the arrow links move their icon instead)
+    &:is(a):not(.prev, .next):is(:hover, :focus-visible) {
+      text-decoration: underline;
+    }
+
+    // Current page: 0.6 opacity keeps black text on white at 5.7:1
+    // (Figma uses 0.5, which is only 4.0:1)
+    &.current {
+      opacity: 0.6;
+    }
+
+    // Previous and Next: text plus the animated arrow
+    &:is(.prev, .next) {
+      @include link-arrow;
+      display: block;
+    }
+
+    // Previous: the arrow comes first and points left
+    &.prev {
+      > span {
+        align-items: center;
+        display: inline-flex;
+        flex-direction: row-reverse;
+      }
+
+      .Icon {
+        margin-inline: 0 var(--icon-gap);
+        scale: -1 1;
+      }
+    }// end prev
+  }// end page-numbers
+
+}// end Pagination

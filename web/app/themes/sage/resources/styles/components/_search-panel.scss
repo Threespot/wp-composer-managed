@@ -1,0 +1,182 @@
+//------------------------------------------------------------------------
+// Search panel (Figma 55-19343 desktop, 56-20922 mobile; spec 4.4; I27)
+// Opened by HeaderPanels (.Header.is-search-open). On desktop it hangs from the
+// header and fills the rest of the screen. Below the nav breakpoint it sits in
+// the open menu, after the mobile search toggle, and the menu hides everything else.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.SearchPanel {
+  --theme-text-color: #fff;
+  background-color: var(--gray);
+  color: var(--theme-text-color);
+  display: none;// below the nav breakpoint it takes room in the menu only while open
+  opacity: 0;
+  visibility: hidden;
+
+  // Fade out anything a screen reader can read: visibility waits for the fade
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity 200ms ease-out, visibility 0s linear 200ms;
+  }
+
+  .Header.is-search-open & {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity 200ms ease-out, visibility 0s linear 0s;
+    }
+  }
+
+  @media (width >= #{$layout-nav-bp-em}) {
+    display: block;
+    height: calc(100dvh - var(--header-bottom, 169px));// HeaderPanels sets --header-bottom; 169px is Figma 55-17143
+    inset-inline: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    position: absolute;
+    top: 100%;
+    z-index: var(--z-index-nav);
+  }
+
+  &-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 8px 0 40px;// Figma mobile 56-20922: 32px below the toggle row (the menu's 24px gap plus 8), 40 below; the menu pads the sides
+
+    @media (width >= #{$layout-nav-bp-em}) {
+      gap: 64px;
+      padding: 120px 80px;
+    }
+  }// end inner
+
+  &-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  &-heading {
+    color: var(--gray-tint);
+    font-family: var(--graphik-compact);
+    font-size: 40px;
+    font-weight: bold;
+    line-height: 1.25;
+    margin: 0;
+
+    @media (width >= #{$layout-nav-bp-em}) {
+      font-size: 60px;
+      line-height: 1.3;
+    }
+  }// end heading
+
+  &-row {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media (width >= #{$layout-nav-bp-em}) {
+      align-items: flex-end;
+      flex-direction: row;
+    }
+  }// end row
+
+  // Not input-default: that style is always white
+  &-input {
+    appearance: none;
+    background-color: rgb(255 255 255 / 10%);// Figma rgba(229,235,230,0.1)
+    border: 0;
+    border-bottom: 1px solid #fff;
+    border-radius: 0;
+    color: #fff;
+    flex: 1;
+    font-family: var(--graphik);
+    font-size: 20px;
+    height: 62px;
+    line-height: 1.5;
+    padding: 16px;
+    width: 100%;
+
+    &::placeholder {
+      color: #fff;
+      opacity: 1;
+    }
+
+    // Figma draws no clear button, and the browser's blue one doesn't show on --gray
+    &::-webkit-search-cancel-button {
+      appearance: none;
+    }
+  }// end input
+
+  // A <button>, so it needs the resets that the link buttons don't
+  &-submit {
+    border: 0;
+    cursor: pointer;
+    flex: none;
+    line-height: 1.5;// Figma: 16/1.5 text and 12px padding make the 48px button
+  }
+
+  &-wrap {
+  }
+
+  &-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }// end links
+
+  &-linksHeading {
+    color: var(--gray-tint);
+    font-family: var(--graphik-compact);
+    font-size: 18px;
+    font-weight: bold;
+    line-height: normal;
+    margin: 0;
+
+    @media (width >= #{$layout-nav-bp-em}) {
+      font-size: 22px;
+    }
+  }// end linksHeading
+
+  &-linksList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    @media (width >= #{$layout-nav-bp-em}) {
+      gap: 16px;
+    }
+  }// end linksList
+
+  &-linksItem {
+  }
+
+  // Figma draws the border at 10% (1.36:1); raised to 40% to reach 3:1 on --gray
+  &-link {
+    border: 1px solid rgb(255 255 255 / 40%);
+    color: #fff;
+    display: block;
+    font-family: var(--graphik);
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 8px;
+    text-decoration: none;
+
+    @media (width >= #{$layout-nav-bp-em}) {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    // Hover isn't drawn in Figma
+    &:is(:hover, :focus-visible) {
+      background-color: rgb(255 255 255 / 10%);
+    }
+  }// end link
+
+}// end SearchPanel

@@ -25,6 +25,8 @@ web/.htaccess
 web/license.txt
 web/readme.html
 web/index.php
+# ...except the bootstrapper itself, which the upstream ships and commits.
+!web/index.php
 web/wp-*
 !web/wp-cli.yml
 !web/wp-config.php
@@ -66,6 +68,9 @@ wp-cli.local.yml
 # mu-plugins is version controlled. Exceptions to this rule are made to specific
 # files managed by Composer.
 web/app/mu-plugins/*/
+# Threespot: CPT/taxonomy definitions autoloaded by threespot/wp-base-config
+!web/app/mu-plugins/custom-post-types/
+!web/app/mu-plugins/custom-taxonomies/
 
 # Plugins
 # Ignore the plugins directory by default. WordPress plugins should be managed
@@ -110,6 +115,12 @@ sitemap.xml.gz
 !web/private/
 web/private/*
 !web/private/config/
+# Threespot Quicksilver scripts (see pantheon.yml workflows)
+!web/private/scripts/
+web/private/scripts/*
+!web/private/scripts/quicksilver/
+web/private/scripts/quicksilver/*
+!web/private/scripts/quicksilver/threespot-*/
 
 # Autoloader
 # This file loads the Composer autoloader and is moved to the root directory by
@@ -118,9 +129,9 @@ web/private/*
 /autoload.php
 
 # Pantheon.upstream.yml
-# Avoid accidental modification of pantheon.upstream.yml in sites
-# created from this upstream
-pantheon.upstream.yml
+# Committed on purpose: this site's repo lives on GitHub (external repository),
+# so Pantheon reads the upstream defaults from here. Put site overrides in
+# pantheon.yml rather than editing pantheon.upstream.yml.
 
 # Files
 # Common files that should not be version controlled.
@@ -162,3 +173,43 @@ Thumbs.db
 #############
 .idea
 .codacy
+
+# :::::::::::::::::::::: Threespot Additions ::::::::::::::::::::::
+
+# Sage theme: Composer deps are installed by the root post-install-cmd and the
+# compiled assets are built by Pantheon (frontend_build in pantheon.yml), so
+# neither is committed.
+web/app/themes/sage/vendor/
+web/app/themes/sage/node_modules/
+web/app/themes/sage/public/build/
+web/app/themes/sage/public/hot
+
+# Node
+node_modules/
+
+# Local tooling
+logs/*
+!logs/collect-logs-rsync.sh
+.phpunit.cache/
+# Yarn 4 (root: visual regression harness)
+/.yarn/*
+!/.yarn/patches
+!/.yarn/plugins
+!/.yarn/releases
+!/.yarn/sdks
+!/.yarn/versions
+/.pnp.*
+/visual-regression/playwright-report/
+/visual-regression/test-results/
+.lando.local.yml
+auth.json
+.intent/
+.claude/*
+!.claude/settings.json
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/php.ini
+!.vscode/extensions.json
+.idea/
+.phpunit.result.cache

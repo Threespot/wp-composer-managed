@@ -1,0 +1,75 @@
+//------------------------------------------------------------------------
+// Default file block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/file/style.scss
+//
+// <div class="wp-block-file">
+//   <a id="wp-block-file--media-123456" href="/wp-content/uploads/2023/11/example.pdf">
+//     File Download
+//   </a>
+//   <a class="wp-block-file__button wp-element-button" href="/wp-content/uploads/2023/11/example.pdf" download aria-describedby="wp-block-file--media-123456">
+//     Download
+//   </a>
+// </div>
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.wp-block-file {
+  $bp-align: 768px;
+  --default-block-margin: 2em;
+  --floated-horz-margin: 50px;
+  --gap: 1em;
+  align-items: center;
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  @include default-block-margins;
+  @include layout-block-outset;
+
+  &:is(.alignleft, .alignright) {
+    @media (min-width: $bp-align) {
+      margin-block: 1em;
+      max-width: 50%;
+    }
+  }
+
+  &.alignleft {
+    @media (min-width: $bp-align) {
+      clear: inline-start;
+      float: inline-start;
+      margin-inline-end: var(--floated-horz-margin);
+    }
+  }
+
+  &.alignright {
+    text-align: start;
+
+    @media (min-width: $bp-align) {
+      clear: inline-end;
+      float: inline-end;
+      margin-inline-start: var(--floated-horz-margin);
+    }
+  }
+
+  // Text link
+  // 1. Since the block uses `display: flex` we can’t apply fancy
+  //    animated underline using linear-gradient background image.
+  a:not(.wp-block-file__button) {
+    @include link-icon;
+    @include link-hover-underline;// [1]
+  }
+
+  // Download button
+  .wp-block-file__button {
+    flex-shrink: 0;
+    margin-left: 0;// override WP default syles
+    @include button-default;
+
+    // File type and size info added in block-config.php
+    .info {
+      font-size: 16px;
+      font-weight: normal;
+      margin-left: 0.5ch;
+      word-spacing: 4px;
+    }
+  }
+}// end wp-block-file

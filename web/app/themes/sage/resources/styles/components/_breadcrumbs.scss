@@ -1,0 +1,87 @@
+//------------------------------------------------------------------------
+// Breadcrumbs (Figma 184-24918)
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Breadcrumbs {
+  --col-gap: 30px;
+  --divider-width: 6px;
+
+  // Note: The <ol> element is only generated when there are multiple links
+  &-list {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--col-gap) / 2);
+
+    // Note: We only want to apply this link style inside of lists
+    :where(a) {
+      display: block;
+    }
+  }// end list
+
+  &-item {
+    font-family: var(--graphik-compact);
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+    line-height: 1.5;
+    position: relative;
+    text-transform: uppercase;
+
+    // Divider (chevron, 15px from the text on each side)
+    // Don’t show after last item unless there’s only one
+    &:is(:only-child, :not(:last-child)) {
+      padding-right: calc(var(--col-gap) / 2 + var(--divider-width));
+
+      &:before {
+        // The text color at 20%: white on dark backgrounds, black on light ones (Figma 23-17989).
+        // Inside a banner the text color is --banner-text-color; elsewhere it's currentColor.
+        background-color: color-mix(in srgb, currentColor 20%, transparent);
+        content: '';
+        height: 10px;
+        mask-image: svg-url($svg-chev-right-small), linear-gradient(transparent, transparent);
+        mask-position: center;
+        mask-repeat: no-repeat;
+        mask-size: contain;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        translate: 0 -50%;
+        width: var(--divider-width);
+
+        .Banner & {
+          background-color: color-mix(in srgb, var(--banner-text-color) 20%, transparent);
+        }
+      }
+    }
+
+  }// end item
+
+  // Current page: an unlinked crumb with the same type as the links
+  &-item[aria-current="page"],
+  &-item [aria-current="page"]:not(a) {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &-link {
+    color: var(--theme-link-color);
+    text-decoration: none;
+
+    @include attention {
+      text-decoration: underline;
+    }
+
+    // Current page: an unlinked crumb with the same type, no hover change
+    &--current {
+      color: currentColor;
+      cursor: default;
+      text-decoration: none;
+
+      @include attention {
+        text-decoration: none;
+      }
+    }
+  }// end link
+}// Breadcrumbs

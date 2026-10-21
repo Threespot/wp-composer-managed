@@ -1,0 +1,211 @@
+// -------------------------------------------------------------------------
+// Card mixins, shared by the card partials in views/partials/cards/
+// (Figma "Card promo styles" 184-23387)
+// -------------------------------------------------------------------------
+@use "@mixins/icon-mixins" as *;
+@use "@mixins/link-mixins" as *;
+
+// Sizes the cards draw at, in Figma "Mobile" and "Desktop" variants.
+// The headings mixins scale by container width from 375px to 760px, which
+// doesn't fit a card, so cards set --heading-size directly.
+$card-title-size-narrow: 22px;// Figma "Mobile/h4"
+$card-title-size-wide: 28px;// Figma "Desktop/h4"
+
+// The card's root: its own size container (spec C3), and the positioning box
+// for the Fill cards' stretched link and the hover layers
+@mixin card-root() {
+  container-type: inline-size;
+  position: relative;
+}
+
+// The arrow after the title's last word (App\append_icon() with arrow-right).
+// It keeps its space at rest, so the title never moves. The $state fades it in
+// and nudges it right (Figma "Last line link" 184-24995, mixins/_link-mixins.scss).
+// $state: appended to the card root, to say what shows the arrow
+@mixin card-arrow($state: ":has(:hover, :focus-visible)") {
+  @include last-line-link($state);
+}
+
+// The title or CTA link, optionally stretched over the whole card
+// Never wrap a card in <a> (CLAUDE.md, "Clickable cards/tiles")
+// $stretch: false (the default) leaves the card unclickable but for the title link and the
+// image link, whose own focus ring shows. Only cards drawn as a card (a background color, Fill)
+// pass true. Pair false with the card-arrow, card-rule and card-house-mask $state
+// ":has(<Card>-link:is(:hover, :focus-visible), a<Card>-image:hover)", so only hovering or
+// focusing a link shows the hover effects (Ted, 2026-10-15).
+@mixin card-link($stretch: false) {
+  color: inherit;
+  text-decoration: none;
+
+  @if $stretch {
+    &::after {
+      content: '';
+      inset: 0;
+      position: absolute;
+      z-index: 1;// above the image and the house mask
+    }
+  }
+
+  // Disable links in editor
+  :where(.block-editor-iframe__html, .wp-admin) & {
+    pointer-events: none;
+  }
+}
+
+// Links inside a card with a stretched link (e.g. Topics) sit above it.
+// No ancestor between them and the card root may make a stacking context
+// (opacity, transform, isolation), or they stay under the overlay.
+// $raised: false for cards with no stretched link, which have no overlay to sit above
+@mixin card-inner-link($raised: true) {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: from-font;
+
+  @if $raised {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Disable links in editor
+  :where(.block-editor-iframe__html, .wp-admin) & {
+    pointer-events: none;
+  }
+}
+
+// A 1px top rule that darkens on hover. The darker rule is a layer that
+// fades in, so only opacity animates (D9).
+// $rest, $hover: colors
+// $state: appended to the card root, to say what darkens the rule
+@mixin card-rule($rest, $hover, $state: ":has(:hover, :focus-visible)") {
+  border-top: 1px solid $rest;
+
+  &::before {
+    border-top: 1px solid $hover;
+    content: '';
+    inset: -1px 0 auto;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity $icon-duration $icon-easing;
+    }
+  }
+
+  &#{$state}::before {
+    opacity: 1;
+  }
+}
+
+// Dark at rest, tint on hover and focus (Fill cards). The two colors are
+// layers of the same size that cross-fade, so only opacity animates (D9).
+// The root paints no background of its own: a tint layer fading over a
+// dark background left a dark sub-pixel line along the edges.
+// $rest, $hover: colors
+@mixin card-fill-layers($rest, $hover) {
+  isolation: isolate;// keeps the layers behind the text
+
+  &::before,
+  &::after {
+    content: '';
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: -1;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity $icon-duration $icon-easing;
+    }
+  }
+
+  &::before {
+    background-color: $rest;
+  }
+
+  &::after {
+    background-color: $hover;
+    opacity: 0;
+  }
+
+  &:has(:hover, :focus-visible) {
+    &::before {
+      opacity: 0;
+    }
+
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
+// The "M" house shape that cuts into the top of a card image on hover
+// (Figma "m house" on Default Card Link, Listing Style, Event Promo and
+// Oversized Card Link). Markup: resources/images/house-mask.svg inside
+// the image box. It slides down from above the image, so only transform
+// animates. Its color matches what's behind the card: set
+// --card-mask-color on a dark section.
+// $card: the card root selector, e.g. #{$selector}
+// $depth: how far its low points reach, as a share of the image height
+// $state: appended to the card, to say what lowers the mask
+@mixin card-house-mask($card, $depth: 25%, $state: ":has(:hover, :focus-visible)") {
+  fill: var(--card-mask-color, var(--theme-bg-color, #fff));
+  height: $depth;
+  inset: 0 0 auto;
+  pointer-events: none;
+  position: absolute;
+  transform: translateY(-100%);
+  width: 100%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: transform $icon-duration $icon-easing;
+  }
+
+  #{$card}#{$state} & {
+    transform: translateY(0);
+  }
+}
+
+// The image box: fixed ratio, cropped, holding the house mask. When the card has a
+// title link, the box is a second link to the same page, hidden from screen readers
+// and the tab order (aria-hidden, tabindex -1), so it isn't announced twice.
+@mixin card-image-box() {
+  aspect-ratio: 3 / 2;
+  display: block;
+  overflow: hidden;
+  position: relative;
+
+  // Disable links in editor
+  :where(.block-editor-iframe__html, .wp-admin) & {
+    pointer-events: none;
+  }
+
+  img {
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--focal-point, center);// set by App\img_tag()
+    width: 100%;
+  }
+}
+
+// Text sizes. Figma draws them smaller in the Mobile variants.
+@mixin card-excerpt($wide: false) {
+  @if $wide {
+    font-size: 16px;
+    line-height: 1.5;
+  } @else {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+
+// Date, author, location and Topics, at 70% (Figma)
+// The text colour fades, not the element: opacity would make a stacking
+// context, which could trap the Topic links under a stretched link if a card
+// ever has one.
+// Black at 70% on white is #4d4d4d (8.45:1); white at 70% on the darkest
+// banner color is 7.8:1.
+@mixin card-meta() {
+  color: color-mix(in srgb, currentColor 70%, transparent);
+  font-size: 14px;
+  line-height: 1.5;
+}

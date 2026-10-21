@@ -1,0 +1,82 @@
+//------------------------------------------------------------------------
+// Page List block (Figma "Page List" 10-7648)
+// https://github.com/Threespot/nmhc/issues/8
+//
+// Intro text on top, then a grid of Fill Cards: one column, two from 640px
+// (Figma draws two at 1302px).
+// The Status and Last Updated rows are out of scope (custom-blocks D2).
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.PageList {
+  $bp-two-col: 640px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  @include default-block-margins;
+
+  &-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 635px;// Figma width
+  }// end intro
+
+  &-heading {
+    @include h2;
+
+    margin: 0;
+  }
+
+  &-body {
+    // Figma Mobile/Body 16px to Desktop/Body 20px
+    font-size: var(--default-text-scale);
+    line-height: var(--default-line-height);
+
+    > * {
+      margin-block: 0;
+    }
+
+    > * + * {
+      margin-block-start: 1em;
+    }
+  }// end body
+
+  &-intro-link {
+    align-self: flex-start;
+
+    // Disable links in editor
+    :where(.block-editor-iframe__html, .wp-admin) & {
+      pointer-events: none;
+    }
+  }
+
+  &-list {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+    padding: 0;
+
+    @container (min-width: #{$bp-two-col}) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }// end list
+
+  &-item {
+    display: flex;// Cards in a row share the tallest height
+    flex-direction: column;
+    list-style: none;
+
+    > * {
+      flex: 1 1 auto;
+    }
+
+    // Disable links in editor
+    :where(.block-editor-iframe__html, .wp-admin) & a {
+      pointer-events: none;
+    }
+  }// end item
+}// end PageList

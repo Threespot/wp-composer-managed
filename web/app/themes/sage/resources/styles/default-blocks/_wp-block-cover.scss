@@ -1,0 +1,85 @@
+//------------------------------------------------------------------------
+// Default cover block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/cover/style.scss
+//
+// NOTE: We’re adding “l-block” class to the wrapper (see gutenberg.js)
+//
+// <div class="wp-block-cover l-block">
+//   <span aria-hidden="true" class="wp-block-cover__background has-background-dim"></span>
+//   <img loading="lazy" decoding="async" width="1440" height="762" class="wp-block-cover__image-background wp-image-281" alt="" src="…" data-object-fit="cover" srcset="…" sizes="…">
+//   <div class="wp-block-cover__inner-container u-richtext is-layout-constrained wp-block-cover-is-layout-constrained">
+//     …
+//   </div>
+// </div>
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.wp-block-cover {
+  $bp-align: $layout-max-width-narrow-bp;
+  $bp-end-scale: 1024px;
+  --default-bg-color: var(--blue-dark);
+  --floated-horz-margin: 50px;
+  --floated-max-width: 420px;
+  clear: both;
+  container-type: inline-size;// allow headings to resize
+  min-height: 0 !important;// override WP default
+  padding-block: scale-clamp((375px: 32px, $bp-end-scale: 80px));
+  @include default-block-margins;
+  @include layout-block-outset;
+
+  @media (max-width: $bp-align - 1px) {
+    min-height: 0 !important;// disable custom height in narrow viewport
+    max-width: none !important;// override WP style
+  }
+
+  // OPTIONAL: Make fullwidth in mobile view
+  &:not(.alignleft, .alignright) {
+    @media (max-width: $bp-align - 1px) {
+      @include layout-fullwidth($important: true);
+    }
+  }
+
+  &.alignleft,
+  &.alignright {
+    padding-block: 32px;
+
+    @media (max-width: $bp-align - 1px) {
+      float: none;
+      margin-inline-start: auto;
+      margin-inline-end: auto;
+    }
+
+    @media (min-width: $bp-align) {
+      margin-block: 10px;
+      max-width: min(50%, var(--floated-max-width));
+
+      // Adjust margin in admin since the editor layout is different
+      .block-editor-iframe__html & {
+        --floated-margin: 1.25em;
+      }
+    }
+  }
+
+  &.alignleft {
+    @media (min-width: $bp-align) {
+      clear: inline-start;
+      float: inline-start;
+      margin-inline-end: var(--floated-horz-margin);
+    }
+  }
+
+  &.alignright {
+    @media (min-width: $bp-align) {
+      clear: inline-end;
+      float: inline-end;
+      margin-inline-start: var(--floated-horz-margin);
+    }
+  }
+
+  &__background {
+    // Apply dark blue background color by default
+    &:not([class*=-background-color]) {
+      background-color: var(--default-bg-color) !important;
+    }
+  }
+}

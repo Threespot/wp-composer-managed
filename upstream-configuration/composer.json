@@ -9,8 +9,50 @@
         }
     ],
     "require": {
+        "admin-columns/admin-columns-pro": "^7.0.18",
+        "filp/whoops": "^2.14",
+        "gravity/gravityforms": "^3.0.2",
+        "gravity/gravityformsgoogleanalytics": "^2.4.1",
+        "johnbillion/extended-cpts": "^5.0",
+        "log1x/navi": "^3.0.2",
+        "rhubarbgroup/object-cache-pro": "^1.25.0",
+        "roots/acorn": "^6.0",
+        "roots/acorn-prettify": "^1.0.1",
+        "threespot/wp-base-config": "^0.2.12",
+        "wp-plugin/acf-gravityforms-add-on": "^1.3.10",
+        "wp-plugin/admin-menu-editor": "^1.12.4",
+        "wp-plugin/ai": "^1.0.0",
+        "wp-plugin/ai-provider-for-anthropic": "^1.0.3",
+        "wp-plugin/ai-provider-for-google": "^1.1.0",
+        "wp-plugin/ai-provider-for-openai": "^1.0.3",
+        "wp-plugin/better-image-sizes": "^3.8.0",
+        "wp-plugin/block-manager": "^3.0",
+        "wp-plugin/cloudflare": "^4.14",
+        "wp-plugin/csv-xml-import-for-acf": "^1.0.8",
+        "wp-plugin/disable-embeds": "^1.5",
+        "wp-plugin/disable-emojis": "^1.7",
+        "wp-plugin/duplicate-post": "^4.5.0",
+        "wp-plugin/enable-media-replace": "^4.1.5",
+        "wp-plugin/favicon-by-realfavicongenerator": "^1.3.32",
+        "wp-plugin/filebird": "^6.3.2",
+        "wp-plugin/gravityformscli": "^1.9.0",
+        "wp-plugin/pantheon-hud": "^0.4.3",
+        "wp-plugin/post-type-switcher": "^4.0.0",
+        "wp-plugin/query-monitor": "^4.0.6",
+        "wp-plugin/redirection": "^5.5.0",
+        "wp-plugin/resize-image-after-upload": "^1.8.6",
+        "wp-plugin/safe-svg": "^2.2.5",
+        "wp-plugin/simple-custom-post-order": "^2.5.7",
+        "wp-plugin/term-management-tools": "^2.0.2",
+        "wp-plugin/user-switching": "^1.11.0",
+        "wp-plugin/wordpress-seo": "^28.0.0",
+        "wp-plugin/wp-crontrol": "^1.18",
+        "wp-plugin/wp-security-audit-log": "^5.5.3",
+        "wp-theme/twentytwentyfive": "^1.2",
+        "wpengine/advanced-custom-fields-pro": "~6.8.5"
     },
     "extra": {
-        "_README": "To make a custom upstream, clone this repository and add any dependencies to be provided by this upstream to this composer.json file. Leave the root-level composer.json file for the exclusive use of each individual site; do not modify it after your custom upstream has been published. See https://pantheon.io/docs/create-custom-upstream for more information."
-    }
+        "_README": "Threespot custom upstream (Threespot/wp-composer-managed). Shared plugins/packages go here so sites receive them through Pantheon upstream updates; the root composer.json belongs to each site. Premium/VCS repositories still have to be listed in the root composer.json."
+    },
+    "description": "Threespot base build: packages every Threespot site gets from the wp-composer-managed upstream. Package repositories must be declared in the site's root composer.json (Composer ignores repositories in dependencies)."
 }

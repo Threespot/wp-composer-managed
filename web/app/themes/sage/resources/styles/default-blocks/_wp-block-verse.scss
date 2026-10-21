@@ -1,0 +1,15 @@
+//------------------------------------------------------------------------
+// Verse block
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/verse/style.scss
+// <pre class="wp-block-verse">…</pre>
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.wp-block-verse {
+  --default-block-margin: 2em;
+  clear: both;
+  font-size: inherit;
+  font-family: var(--default-font-family) !important;
+  line-height: var(--default-line-height);
+  @include default-block-margins;
+}

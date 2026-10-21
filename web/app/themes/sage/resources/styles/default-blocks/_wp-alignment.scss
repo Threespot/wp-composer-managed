@@ -1,0 +1,37 @@
+//------------------------------------------------------------------------
+// Wide and full-width layout styles
+//
+// NOTE: These styles only work when the parent wrapper is centered,
+//       not in multi-column layouts.
+//
+// NOTE: In the Gutenberg editor, the block alignment classes are removed
+//       so we need a separate selector for each layout below.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// Full width
+.alignfull {
+  @include layout-fullwidth;
+
+  // Overrides for nested wide components
+  .alignwide {
+    margin-inline: 0 !important;
+
+    // Adjust margin in admin since the editor layout is different
+    .block-editor-iframe__html & {
+      margin-inline: auto !important;
+    }
+  }
+}
+
+// Wide
+.alignwide {
+  @include layout-wide;
+}
+
+// Center
+.aligncenter {
+  margin-inline: auto;
+}
+
+// NOTE: Left/right alignment styles are customized at the block level

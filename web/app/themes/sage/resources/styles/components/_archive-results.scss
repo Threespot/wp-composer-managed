@@ -1,0 +1,35 @@
+//------------------------------------------------------------------------
+// Archive results (#32): the listing cards in one column, two from 900px
+// (Figma 24-21615: two 635px columns, 32px apart, at 1302 wide)
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.ArchiveResults {
+  &-list {
+    display: grid;
+    gap: 0 32px;
+
+    // The cards put the image beside the text from 600px wide
+    @container (min-width: 900px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  // &-item {}
+
+  &-empty {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-block: 32px;
+  }
+
+  &-message {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  // &-reset {}
+
+}// end ArchiveResults

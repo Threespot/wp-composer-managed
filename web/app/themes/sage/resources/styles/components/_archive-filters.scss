@@ -1,0 +1,251 @@
+//------------------------------------------------------------------------
+// Archive Filters (Figma 184-24931)
+// Desktop: one row (Filter by | Sort by ... count), always open, no toggle.
+// Mobile: a tinted box with a "Filter + Sort" toggle that opens the panel
+// (modules/expandables.js sets aria-expanded and aria-hidden).
+// The breakpoint is a media query because the component is full width.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.ArchiveFilters {
+  $selector: &;
+  // In em, so a larger browser text size gets the stacked filters before the row runs out of room
+  // (WCAG 1.4.4). Must match data-expands-media in the partial.
+  $bp-row: $layout-nav-bp-em;// FIXME: confirm the breakpoint where the filters become one row
+  $rule-color-mobile: rgb(0 0 0 / 10%);// Figma rgba(0,0,0,0.1)
+
+  @media (width >= #{$bp-row}) {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+    justify-content: space-between;
+    padding-bottom: 32px;
+  }
+
+  // The tinted box holds the toggle and the panel, so it grows when the panel opens
+  &-box {
+    background-color: var(--blue-tint);
+
+    @media (width >= #{$bp-row}) {
+      background-color: transparent;
+    }
+  }
+
+  // Mobile only. The label and icon sit on one row, the padding gives a large tap target
+  &-toggle {
+    // The CSS reset gives buttons a border and background
+    align-items: center;
+    background-color: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    padding: 20px 16px;// 16px box padding + 4px around the 22px icon = 30px row (Figma)
+    text-align: start;
+    width: 100%;
+
+    @media (width >= #{$bp-row}) {
+      display: none;
+    }
+
+    .no-js & {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+
+    &-label {
+      font-family: var(--graphik-compact);
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    // The sliders icon shows when closed and the X when open
+    &-icon {
+      flex-shrink: 0;
+      height: 22px;
+      width: 22px;
+
+      &--close {
+        display: none;
+      }
+    }
+
+    &[aria-expanded="true"] &-icon {
+      &--filter {
+        display: none;
+      }
+
+      &--close {
+        display: block;
+      }
+    }
+  }// end toggle
+
+  // White fields on the tinted box (mobile), tinted fields on the page (desktop)
+  &-panel {
+    --select-bg-color: #fff;
+    --select-border-color: color-mix(in srgb, var(--gray) 60%, transparent);// a white field on the tinted box needs 60% for 3:1
+
+    @media (width < #{$bp-row}) {
+      @include expandable();
+    }
+
+    @media (width >= #{$bp-row}) {
+      --select-bg-color: var(--blue-tint);
+      --select-border-color: initial;// back to the select mixin's 50%
+    }
+
+    // Padding-inline is safe here. Block spacing goes on the groups, never on the wrapper.
+    &-wrap {
+      padding-inline: 16px;
+
+      @media (width >= #{$bp-row}) {
+        align-items: stretch;
+        display: flex;
+        padding-inline: 0;
+      }
+    }
+  }// end panel
+
+  // Mobile: 16px above each group except the first (the toggle's bottom padding gives that
+  // gap), and the last group also gets 16px below
+  &-group {
+    padding-block: 16px 0;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 16px;
+    }
+
+    // A rule between the groups: horizontal on mobile, vertical on desktop
+    & + & {
+      border-top: 1px solid $rule-color-mobile;
+      margin-top: 16px;
+    }
+
+    @media (width >= #{$bp-row}) {
+      display: flex;
+      flex-direction: column;
+      padding-block: 0;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+
+      // Vertical rule with 32px on each side
+      & + & {
+        border-inline-start: 1px solid var(--gray-tint);
+        border-top: 0;
+        margin-inline-start: 32px;
+        margin-top: 0;
+        padding-inline-start: 32px;
+      }
+    }
+
+    // Graphik Compact Bold 16px, uppercase, 0.03em (the same type as the link-arrow links)
+    &-label {
+      font-family: var(--graphik-compact);
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 0.03em;
+      line-height: 1.5;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+  }// end group
+
+  // "Filter by" with "Clear filters" at the other end once a filter is set
+  &-filterHeader {
+    align-items: center;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    margin-bottom: 8px;
+
+    #{$selector}-group-label {
+      margin-bottom: 0;
+    }
+
+    // FacetWP's front.css gives every facet container 40px below
+    .facetwp-facet {
+      margin-bottom: 0;
+    }
+  }// end filterHeader
+
+  // "Clear filters" (FacetWP's reset facet, Eva #115): a text button, not in Figma.
+  // FacetWP hides its container (.facetwp-hidden) while no filter is set.
+  &-clear {
+    @include button-link;
+    // The CSS reset gives buttons a border
+    border: 0;
+    cursor: pointer;
+    font-size: 14px;
+    // 24px tall, the label's line height, so showing it moves nothing (and WCAG 2.5.8's minimum)
+    line-height: 1.5;
+    padding: 1.5px 0;
+  }// end clear
+
+  // Hook for the sort group (the rule comes from the group + group rule above)
+  &-sort {
+  }
+
+  &-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media (width >= #{$bp-row}) {
+      flex-direction: row;
+      margin-top: auto;// the sort field lines up with the filter fields' bottom edge
+    }
+  }
+
+  &-field {
+    display: block;
+    min-width: 0;
+
+    @media (width >= #{$bp-row}) {
+      width: 240px;
+    }
+
+    // Dropdown label (Figma: Regular 14px)
+    &-label {
+      @include field-label(normal);
+    }
+
+    select {
+      @include select;
+    }
+  }// end field
+
+  &-count {
+    font-size: 16px;
+    line-height: 1.5;
+
+    // 8px below the box on mobile
+    #{$selector}-box + & {
+      margin-top: 8px;
+    }
+
+    @media (width >= #{$bp-row}) {
+      margin-inline-start: auto;
+
+      #{$selector}-box + & {
+        margin-top: 0;
+      }
+    }
+  }// end count
+
+}// end ArchiveFilters

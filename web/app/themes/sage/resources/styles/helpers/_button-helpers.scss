@@ -1,0 +1,16 @@
+// -------------------------------------------------------------------------
+// Buttons
+//
+// stylelint-disable:disable no-important, no-color-literals
+// -------------------------------------------------------------------------
+@use "@mixins/button-mixins" as *;
+
+.btn {
+  &-fill {
+    @include button-fill;
+  }
+
+  &-outline {
+    @include button-outline;
+  }
+}// end btn

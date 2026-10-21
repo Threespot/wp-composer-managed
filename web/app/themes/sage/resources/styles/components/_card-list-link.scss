@@ -1,0 +1,135 @@
+//------------------------------------------------------------------------
+// List link (Figma "List Link" 184-23488)
+//
+// Figma draws the Desktop and Mobile variants at the same 327px width, so
+// the card's own width can't tell them apart. This card isn't a size
+// container: its parts query the section it sits in instead (e.g.
+// .l-block-wrap), which is 600px or wider on desktop layouts.
+// Only the title is a link; the card isn't clickable (it has no image). Hover or focus
+// on the title: the top rule darkens and the arrow fades in. A card with no title
+// link has no hover effects.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.ListLink {
+  $selector: &;
+  // Hover effects show only while the title link is hovered or focused (Ted, 2026-10-15), not
+  // from the rest of the card or its Topic links.
+  $trigger: ":has(#{$selector}-link:is(:hover, :focus-visible))";
+  @include card-rule(var(--list-link-rule-color, var(--banner-color-tint)), var(--list-link-rule-hover-color, var(--banner-color-dark)), $trigger);
+  @include card-arrow($trigger);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 16px;
+  position: relative;
+
+  @container (min-width: 600px) {
+    gap: 32px;
+    padding-block: 24px;
+  }
+
+  // On dark backgrounds (Figma Color = White)
+  &--white {
+    --list-link-rule-hover-color: #fff;// Figma #fff (184-23518)
+    --theme-text-color: #fff;
+    color: var(--theme-text-color);
+  }
+
+  // Figma Property 1 = Tiny
+  &--tiny {
+    gap: 12px;
+    padding-block: 8px;
+
+    @container (min-width: 600px) {
+      gap: 24px;
+      padding-block: 16px;
+    }
+  }
+
+  &--pill {
+  }
+
+  &-heading {
+    display: flex;
+    flex-direction: column;
+  }
+
+  // The Content Tag, then Member Benefit for a members-only post (as the Default card)
+  &-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &-tag {
+  }
+
+  &-title {
+    --heading-size: #{$card-title-size-narrow};
+    @include h4;
+
+    @container (min-width: 600px) {
+      --heading-size: #{$card-title-size-wide};
+    }
+
+    #{$selector}--tiny & {
+      --heading-size: initial;
+      @include h5;// Figma "Desktop/h5" and "Mobile/h5", 22px and 18px
+    }
+  }
+
+  &-link {
+    @include card-link($stretch: false);
+  }
+
+  &-icon {
+  }
+
+  &-excerpt {
+    @include card-excerpt;
+
+    @container (min-width: 600px) {
+      @include card-excerpt($wide: true);
+      padding-inline-end: 16px;
+    }
+
+    // One faded line (Figma "Tiny")
+    #{$selector}--tiny & {
+      @include card-excerpt($wide: true);
+      opacity: 0.6;
+      overflow: hidden;
+      padding-inline-end: 0;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &-meta {
+    @include card-meta;
+    font-size: 12px;// Figma Mobile
+
+    @container (min-width: 600px) {
+      font-size: 14px;
+    }
+  }
+
+  // The excerpt and the byline, with no gap between them (Figma 19-15823)
+  &-body {
+  }
+
+  // Date, then the author on its own line (Figma 19-15823)
+  &-byline {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-date,
+  &-author {
+  }
+
+  &-topic {
+    @include card-inner-link($raised: false);
+  }
+
+}// end ListLink

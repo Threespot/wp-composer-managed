@@ -1,0 +1,82 @@
+//------------------------------------------------------------------------
+// Mobile Nav (Figma 56-20684 closed, 56-20683 Housing Issues open)
+// Full-width items with a rule above each, in the open menu (.Header-menu).
+// Submenus expand inline with the same expandable() animation as desktop.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Nav {
+  $selector: &;
+
+  @media (width < #{$layout-nav-bp-em}) {
+    --nav-rule-color: var(--gray-tint);
+
+    // Not drawn in Figma: the member menu is black
+    .is-member-view & {
+      --nav-rule-color: rgb(255 255 255 / 20%);
+    }
+
+    // Search open (56-20922): only the search toggle and the panel show
+    .Header.is-search-open & {
+      display: none;
+    }
+
+    &-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;// Figma: 24px between every row and rule
+    }
+
+    &-item {
+      border-top: 1px solid var(--nav-rule-color);
+      padding-top: 24px;
+
+      // The desktop search toggle (the menu's first row is the mobile one)
+      &--search {
+        display: none;
+      }
+    }
+
+    // The padding makes a 38px tap target; the negative margin keeps the 24px gaps measured from the text
+    &-toggle,
+    &-link {
+      align-items: flex-end;// Figma: the arrow sits on the label's baseline
+      display: flex;
+      justify-content: space-between;
+      margin-block: -12px;
+      padding-block: 12px;
+      text-align: start;
+      width: 100%;
+    }
+
+    // Figma 184-22732: a down arrow at the right, always shown
+    &-arrow {
+      --icon-gap: 0;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: transform $icon-duration $icon-easing;
+      }
+    }
+
+    // Links without a submenu have no arrow (Figma keeps an empty slot)
+    &-link #{$selector}-arrow {
+      display: none;
+    }
+
+    // Open: the arrow points up (Figma 39:18057)
+    &-toggle[aria-expanded="true"] #{$selector}-arrow {
+      transform: rotate(180deg);
+    }
+
+    // Inline, no panel. The spacing is on the list (the wrap's child), so the closed panel still reaches 0.
+    // The wrap clips its overflow, so the panel is 6px wider each side and the list pads it back:
+    // room for the 2px focus ring at its 4px offset, and for descenders below the trimmed labels.
+    &-sublist {
+      margin-inline: -6px;
+    }
+
+    &-sublist-list {
+      padding: 66px 6px 6px;// 66px: Figma 56-20683, the menu's 24px gap plus the submenu's 42px padding
+    }
+  }
+}// end Nav

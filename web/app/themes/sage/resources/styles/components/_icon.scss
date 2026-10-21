@@ -1,0 +1,61 @@
+//------------------------------------------------------------------------
+// Animated SVG icons (see mixins/_icon-mixins.scss)
+// Added with App\append_icon() or App\svg() and App\icon_args()
+//------------------------------------------------------------------------
+@use "sass:map";
+@use "@styles/globals" as *;
+
+.Icon {
+  $selector: &;
+  display: inline-block;
+  flex-shrink: 0;
+  height: calc(var(--icon-height) * var(--icon-scale, 1));
+  margin-inline-start: var(--icon-gap, 0.25em);
+  overflow: hidden;// crops the long shafts
+  vertical-align: middle;
+  width: calc(var(--icon-width) * var(--icon-scale, 1));
+
+  @each $name, $icon in $icons {
+    &--#{$name} {
+      --icon-height: #{map.get($icon, height)};
+      --icon-width: #{map.get($icon, width)};
+    }
+  }
+
+  &-move,
+  &-bar {
+    @media (prefers-reduced-motion: no-preference) {
+      transition: transform $icon-duration $icon-easing;
+    }
+  }
+
+  // Scale each plus bar across its own width
+  &-bar {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  &-rest {
+    fill: var(--moving-arrow-rest-color, var(--gray-tint));
+  }
+
+  &-hover {
+    fill: var(--moving-arrow-hover-color, currentColor);
+  }
+
+  // Second chevron of the carousel arrow: hidden at rest, shown when its link or
+  // button is hovered or focused (its 1px move comes from icon-hover())
+  &-extra {
+    opacity: 0;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity $icon-duration $icon-easing,
+                  transform $icon-duration $icon-easing;
+    }
+  }
+
+  :is(a, button):is(:hover, :focus-visible) &-extra {
+    opacity: 1;
+  }
+
+}// end Icon

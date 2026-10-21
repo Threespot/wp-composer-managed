@@ -1,0 +1,185 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": false,
+    "border": {
+      "color": false,
+      "radius": false,
+      "style": false,
+      "width": false
+    },
+    "color": {
+      "background": false,
+      "button": false,
+      "caption": false,
+      "custom": false,
+      "customDuotone": false,
+      "customGradient": false,
+      "defaultDuotone": false,
+      "defaultGradients": false,
+      "defaultPalette": false,
+      "heading": false,
+      "link": false,
+      "palette": [
+        {
+          "slug": "highlight",
+          "color": "var(--yellow)",
+          "name": "Yellow"
+        }
+      ],
+      "text": false
+    },
+    "custom": {
+      "spacing": {},
+      "typography": {
+        "dropCap": false,
+        "font-size": {},
+        "line-height": {}
+      }
+    },
+    "dimensions": {
+      "minHeight": false
+    },
+    "layout": {
+      "contentSize": "840px",
+      "wideSize": "1140px"
+    },
+    "outline": {},
+    "spacing": {
+      "blockGap": null,
+      "customSpacingSize": false,
+      "margin": false,
+      "padding": false,
+      "units": ["px", "%", "em", "rem", "vw", "vh"],
+      "spacingScale": []
+    },
+    "shadow": {
+      "defaultPresets": false
+    },
+    "typography": {
+      "customFontSize": false,
+      "defaultFontSizes": false,
+      "dropCap": false,
+      "fluid": false,
+      "fontFamilies": [],
+      "fontStyle": false,
+      "fontWeight": false,
+      "letterSpacing": false,
+      "lineHeight": false,
+      "textDecoration": false,
+      "textTransform": false
+    },
+    "useRootPaddingAwareAlignments": false,
+    "blocks": {
+      "core/button": {
+        "border": {
+          "radius": false
+        }
+      },
+      "core/cover": {
+        "color": {
+          "heading": false,
+          "palette": [
+            {
+              "slug": "blue",
+              "color": "var(--blue)",
+              "name": "Blue"
+            },
+            {
+              "slug": "blue-light",
+              "color": "var(--blue-light)",
+              "name": "Light Blue"
+            },
+            {
+              "slug": "blue-dark",
+              "color": "var(--blue-dark)",
+              "name": "Dark Blue"
+            },
+            {
+              "slug": "black",
+              "color": "#000",
+              "name": "Black"
+            },
+            {
+              "slug": "white",
+              "color": "#fff",
+              "name": "White"
+            }
+          ]
+        }
+      },
+      "core/group": {
+        "color": {
+          "background": true,
+          "palette": [
+            {
+              "slug": "blue",
+              "color": "var(--blue)",
+              "name": "Blue"
+            },
+            {
+              "slug": "blue-light",
+              "color": "var(--blue-light)",
+              "name": "Light Blue"
+            },
+            {
+              "slug": "blue-dark",
+              "color": "var(--blue-dark)",
+              "name": "Dark Blue"
+            },
+            {
+              "slug": "black",
+              "color": "#000",
+              "name": "Black"
+            }
+          ]
+        }
+      },
+      "core/heading": {
+        "typography": {
+          "textTransform": true
+        }
+      },
+      "core/paragraph": {
+        "typography": {
+          "textColumns": true,
+          "textIndent": false
+        }
+      },
+      "core/pullquote": {
+        "border": {
+          "color": false,
+          "radius": false,
+          "style": false,
+          "width": false
+        },
+        "color": {
+          "background": true,
+          "palette": [
+            {
+              "slug": "blue",
+              "color": "var(--blue)",
+              "name": "Blue"
+            },
+            {
+              "slug": "blue-light",
+              "color": "var(--blue-light)",
+              "name": "Light Blue"
+            },
+            {
+              "slug": "blue-dark",
+              "color": "var(--blue-dark)",
+              "name": "Dark Blue"
+            },
+            {
+              "slug": "black",
+              "color": "#000",
+              "name": "Black"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

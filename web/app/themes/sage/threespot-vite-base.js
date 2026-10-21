@@ -1,0 +1,1 @@
+../../../../vendor/threespot/wp-base-config/dist/vite-base.js

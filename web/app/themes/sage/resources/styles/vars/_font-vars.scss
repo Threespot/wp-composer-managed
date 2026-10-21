@@ -1,0 +1,28 @@
+// -------------------------------------------------------------------------
+// Font variables
+// -------------------------------------------------------------------------
+// FIXME: Define body copy font sizes
+$body-text-min-size: 17px;
+$body-text-max-size: 20px;
+
+:root {
+  // Base font stacks
+  // ================
+  // Note: System sans-serif fonts support multiple weights.
+  //       https://workflowy.com/s/font-stacks/MnwkgDkYvHT12nYT
+  // Note: Avoid `system-ui` due to OS/language issues
+  //       https://github.com/w3c/csswg-drafts/issues/3658
+  // Note: Quotes arn’t necessary for most font names
+  //       See https://mothereff.in/font-family
+  // Note: “color-emoji” is a custom font defined in @threespot/wp-base-styles
+  //       See https://www.client9.com/css-color-emoji-stack/ for details.
+  --sans-serif: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif, color-emoji;
+  --serif: Georgia, serif, color-emoji;
+  --monospace: Consolas, Menlo, Monaco, monospace, color-emoji;
+
+  // Custom web fonts
+  // ================
+  // FIXME: Replace with project fonts
+  // Note: Create vars for weights other than normal (400) and bold (700)
+  --fixme-webfont: "Plus Jakarta Sans", var(--sans-serif);
+}

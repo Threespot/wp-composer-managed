@@ -1,0 +1,162 @@
+//------------------------------------------------------------------------
+// Default card (Figma "Default Card Link" 184-23388, mobile 338-21798)
+//
+// Below 768px (viewport) and in cards narrower than 360px (Figma Mobile, 343): text, then
+// a 222x148 image, left-aligned. Every card puts its image below the text on mobile (Ted,
+// 2026-10-14).
+// From 768px, in a card 360px or wider (Figma Desktop, 412): the image above the text,
+// full width.
+// --horizontal (Stories of Impact Featured positions 2 and 3 only, Figma 17-13648): from
+// 768px, in a card 400px or wider, a 240x160 image on the left (narrower in a card under
+// 600px, 40% of it), the text on the right, the arrow at the top right. Otherwise a normal card.
+// --default-card-rule-color sets the top rule's color (default: the banner tint).
+// The title and the image link to the post; the rest of the card isn't clickable. Hover or
+// focus on the title, or hover on the image: the arrow fades in and the "M" house shape
+// cuts into the image. A card with no title link has no hover effects.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.DefaultCard {
+  $selector: &;
+  @include card-root;
+  // Hover effects show only while the title link is hovered or focused, or the image link is
+  // hovered (Ted, 2026-10-15). A card with no title link has no image link either, so it shows none.
+  $trigger: ":has(#{$selector}-link:is(:hover, :focus-visible), a#{$selector}-image:hover)";
+  @include card-arrow($trigger);
+  border-top: 1px solid var(--default-card-rule-color, var(--banner-color-tint));// Figma tint (184-23403)
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 16px;
+
+  // The card root can't query its own width, so the row is a two-column grid whose children
+  // span both columns (a normal card, gap 16 from the root) until the query matches.
+  // Its rules beat the image rule below by specificity (two classes), whatever the order.
+  &--horizontal {
+    column-gap: 32px;
+    display: grid;
+    grid-template-columns: min(240px, 40%) minmax(0, 1fr);
+
+    > * {
+      grid-column: 1 / -1;
+    }
+
+    @media (min-width: $layout-card-image-bp) {
+      @container (min-width: 400px) {
+        // 16px bottom padding on the root, plus 16px here: Figma's 32px
+        #{$selector}-image {
+          grid-column: 1;
+          grid-row: 1;
+          margin-block-end: 16px;
+          width: 100%;
+        }
+
+        #{$selector}-text {
+          grid-row: 1;
+          margin-block-end: 16px;
+          padding-inline-end: 38px;// room for the arrow (Figma: 24 gap + 14 arrow)
+        }
+
+        // Beside the image only when there is one; a story with no featured image keeps the
+        // full width (the title size and the arrow at the top right stay)
+        &:has(#{$selector}-image) #{$selector}-text {
+          grid-column: 2;
+        }
+
+        // Figma Graphik Compact Bold 24, normalized to h5
+        #{$selector}-title {
+          --heading-size: initial;// back to the h5 sizes
+          @include h5;
+        }
+
+        // Top right of the card, not after the title
+        #{$selector}-icon {
+          inset-block-start: 16px;
+          inset-inline-end: 0;
+          margin-inline-start: 0;
+          position: absolute;
+        }
+      }
+    }
+  }
+
+  &-text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @container (min-width: 360px) {
+      gap: 24px;
+    }
+  }
+
+  &-heading {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &-tag {
+  }
+
+  &-title {
+    --heading-size: #{$card-title-size-narrow};
+    @include h4;
+
+    @container (min-width: 360px) {
+      --heading-size: #{$card-title-size-wide};
+    }
+  }
+
+  &-link {
+    @include card-link($stretch: false);
+  }
+
+  &-icon {
+  }
+
+  &-excerpt {
+    @include card-excerpt;
+
+    @container (min-width: 360px) {
+      @include card-excerpt($wide: true);
+    }
+  }
+
+  &-meta {
+    @include card-meta;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-date,
+  &-author {
+  }
+
+  &-image {
+    @include card-image-box;
+    width: 222px;
+
+    // A viewport query, not a container one: below 768px ("mobile" for card images, Ted
+    // 2026-10-14) every card puts its image below the text, however wide the card is.
+    @media (min-width: $layout-card-image-bp) {
+      @container (min-width: 360px) {
+        order: -1;// above the text
+        width: 100%;
+      }
+    }
+  }
+
+  &-image-img {
+  }
+
+  &-mask {
+    @include card-house-mask($selector, $depth: 27%, $state: $trigger);
+  }
+
+}// end DefaultCard

@@ -1,0 +1,179 @@
+//------------------------------------------------------------------------
+// Logo Grid block (Figma "Logo Grid" 10-6179, mobile 19-14771)
+// https://github.com/Threespot/nmhc/issues/14
+//
+// Each tier is a heading and a grid of sponsor entries, with a rule between rows.
+// Below 640px (data-carousel-below, a viewport media query in modules/carousel.js)
+// each tier becomes a looping carousel of pages of six logos, two by three. Above
+// that the carousel is off, the pages dissolve (display: contents) and the entries
+// flow into one grid. The 640px matches $layout-padding-max-bp: from there the content
+// well is at least 608px wide, where the grid already holds three columns. Without
+// JavaScript the flat grid shows at every width.
+//
+// The rule between rows is drawn above each entry, in the middle of the row gap, and
+// the viewport clips the one above the first row.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.LogoGrid {
+  $selector: &;
+
+  --logo-grid-column-gap: 65px;
+  --logo-grid-row-gap: 130px;// Figma 65px above and below each rule
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+
+  @include default-block-margins;
+
+  &-heading {
+    @include h2;
+
+    margin: 0;
+  }
+
+  // FIXME: no Figma for the block heading and intro (the Figma frame holds tiers only)
+  &-body {
+    font-size: 16px;
+    line-height: 1.5;
+
+    @container (min-width: 640px) {
+      font-size: 20px;
+    }
+
+    > * {
+      margin-block: 0;
+    }
+
+    > * + * {
+      margin-block-start: 1em;
+    }
+  }
+
+  &-tier {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @container (min-width: 640px) {
+      gap: 32px;
+    }
+
+    // Carousel running: Embla moves the track, and each page is one slide of two columns
+    &.is-carousel-active {
+      --logo-grid-row-gap: 32px;// Figma 16px above and below each rule
+
+      #{$selector}-track {
+        display: flex;
+        gap: 0;
+      }
+
+      #{$selector}-page {
+        align-content: start;
+        column-gap: var(--logo-grid-column-gap);
+        display: grid;
+        flex: 0 0 100%;
+        grid-template-columns: repeat(2, minmax(0, 130px));
+        min-width: 0;
+        overflow: clip;// the rules reach past the entries, into the next page
+        row-gap: var(--logo-grid-row-gap);
+      }
+    }
+  }
+
+  &-top {
+    align-items: flex-end;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+  }
+
+  &-title {
+    @include h3;
+
+    flex: 1 1 auto;
+    margin: 0;
+    min-width: 0;
+  }
+
+  // The group's own display: flex beats the hidden attribute
+  &-controls {
+    flex: none;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  // Clips the rule above the first row. Embla clips the same way while it runs.
+  &-viewport {
+    overflow: clip;
+  }
+
+  // Desktop and no JavaScript: one grid, filled by the entries of every page
+  &-track {
+    display: grid;
+    gap: var(--logo-grid-row-gap) var(--logo-grid-column-gap);
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+
+  &-page {
+    display: contents;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &-item {
+    align-items: center;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    text-align: center;
+
+    // Rule between rows
+    &::before {
+      background-color: var(--gray-tint);
+      content: '';
+      height: 1px;
+      inset-block-start: calc(var(--logo-grid-row-gap) / -2);
+      inset-inline: calc(var(--logo-grid-column-gap) / -2);
+      pointer-events: none;
+      position: absolute;
+    }
+  }
+
+  &-logo {
+    display: block;
+    height: 82px;
+    max-width: 130px;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  &-name {
+    color: inherit;
+  }
+
+  &-link {
+    // Disable links in editor
+    :where(.block-editor-iframe__html, .wp-admin) & {
+      pointer-events: none;
+    }
+
+    // Stretched link: the whole entry is the click target
+    &::after {
+      content: '';
+      inset: 0;
+      position: absolute;
+    }
+
+    // Inside the link, so the viewport's overflow: clip can't cut off the ring
+    &:focus-visible {
+      outline-offset: -2px;
+    }
+  }
+
+}// end LogoGrid

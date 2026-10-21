@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 20" preserveAspectRatio="xMidYMid meet">
+  <g fill="currentColor">
+    <path fill="var(--icon-color)" d="M2.03 11.52v6.43h16.94v-6.43H21v7.45c0 .51-.38.94-.88 1l-.14.01H1.02c-.52 0-.94-.38-1.01-.87L0 18.97v-7.45zM11.52 0v9.74l3-3 1.44 1.43-4.74 4.74c-.36.36-.93.4-1.32.1l-.12-.1-4.74-4.74 1.44-1.44 3 3.01V0z"/>
+  </g>
+</svg>

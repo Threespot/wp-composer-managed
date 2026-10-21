@@ -1,0 +1,72 @@
+//------------------------------------------------------------------------
+// FAQs block (Figma 10-7670, also 1688-32292)
+// https://github.com/Threespot/nmhc/issues/13
+//
+// The questions are Accordion items (components/_accordion.scss) in two columns
+// from 640px. modules/load-more.js hides the items past the fifth.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Faqs {
+  $bp-columns: 640px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @include default-block-margins;
+
+  &-heading {
+    @include h2;// Figma: Graphik Compact Bold 40/48
+    margin: 0;
+  }
+
+  &-body {
+    max-width: 635px;// Figma
+
+    > :first-child {
+      margin-block-start: 0;
+    }
+
+    > :last-child {
+      margin-block-end: 0;
+    }
+
+    // Disable links in editor
+    a {
+      :where(.block-editor-iframe__html, .wp-admin) & {
+        pointer-events: none;
+      }
+    }
+  }
+
+  &-list {
+    display: grid;
+    gap: 0 32px;
+    grid-template-columns: minmax(0, 1fr);
+    padding-block-start: 16px;
+
+    @container (min-width: #{$bp-columns}) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  // Each accordion opens on its own height, not the row's
+  &-item {
+    align-self: start;
+
+    // Links in the answers. The accordion buttons stay usable in the editor.
+    .Accordion-panel a {
+      // Disable links in editor
+      :where(.block-editor-iframe__html, .wp-admin) & {
+        pointer-events: none;
+      }
+    }
+  }
+
+  &-more {
+    align-self: flex-start;
+    margin-block-start: 8px;
+  }
+
+}// end Faqs

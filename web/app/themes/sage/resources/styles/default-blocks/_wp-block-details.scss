@@ -1,0 +1,203 @@
+//------------------------------------------------------------------------
+// Details block (i.e. expandable)
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/details/style.scss
+//
+// <details class="wp-block-details is-layout-flow wp-block-details-is-layout-flow">
+//   <summary>Toggle Text</summary>
+//   <p>This content is hidden…</p>
+// </details>
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// Note: Styles should match accordion block
+.wp-block-details {
+  $bp-end-fullwidth: 600px;
+  $bp-end-scale: $layout-max-width-bp;
+  --border-width: 3px;
+  --content-vert-margin: 24px;
+  --easing: #{easing("easeOutCubic")};
+  --speed: 450ms;
+  --icon-size: 14px;
+  --icon-stroke: 1.5px;// OPTIONAL for plus sign marker
+  --padding-horz: #{scale-clamp((375px: 24px, $bp-end-scale: 32px))};// applied to summary toggle and content
+  --padding-vert: #{scale-clamp((375px: 16px, $bp-end-scale: 24px))};// applied to summary toggle
+  clear: both;
+  @include default-block-margins;
+
+  // OPTIONAL: Remove margin between adjacent blocks of same width
+  &:not(.alignwide, .alignfull) + &:not(.alignwide, .alignfull),
+  &.alignwide + &.alignwide,
+  &.alignfull + &.alignfull {
+    margin-top: calc(-1 * var(--default-block-margin) + 8px);// 8px is new vert margin
+  }
+
+  // OPTIONAL: Make fullwidth in mobile layout
+  @media (max-width: $bp-end-fullwidth - 1px) {
+    @include layout-fullwidth;
+  }
+
+  // Note: Safari support for ::details-content starts in 18.4 so we need a fallback
+  //        https://caniuse.com/mdn-css_selectors_details-content
+  .no-details-content-support & {
+    padding-inline: var(--padding-horz);
+
+    summary {
+      box-sizing: border-box;
+      margin-left: calc(-1 * var(--padding-horz));
+      width: calc(100% + var(--padding-horz) * 2);
+    }
+  }
+
+  &::details-content {
+    background-color: var(--default-bg-color);
+    color: var(--default-text-color);
+    padding-inline: var(--padding-horz);
+
+    // Animate panel expand (currently works in Chrome/Edge)
+    // 1. Transition the height using pure CSS in supported browsers (no Safari support)
+    //    https://caniuse.com/mdn-css_types_calc-size
+    //    https://codepen.io/ZoranJambor/pen/jOorzPv?editors=0100
+    // 2. Adding “overflow: hidden” prevents VoiceOver in Safari from accessing the content
+    //    https://bugs.webkit.org/show_bug.cgi?id=295713
+    :where(html:not(.ua-safari)) & {
+      @media (prefers-reduced-motion: no-preference) {
+        height: 0;// [1]
+        overflow: hidden;// [2]
+        transition-behavior: allow-discrete;// [1]
+        transition-duration: var(--speed);// [1]
+        transition-property: content-visibility, height;// [1]
+        transition-timing-function: var(--easing);// [1]
+      }
+    }
+  }
+
+  // Expanded state
+  &[open] {
+    // 2. Fallback for unsupported browsers (i.e. Safari)
+    //    https://caniuse.com/mdn-css_types_calc-size
+    &::details-content {
+      // Disable in Safari to prevent bug in VoiceOver
+      // https://bugs.webkit.org/show_bug.cgi?id=295713
+      :where(html:not(.ua-safari)) & {
+        @media (prefers-reduced-motion: no-preference) {
+          height: auto;// [2]
+          height: calc-size(auto, size);// [1]
+        }
+      }
+    }
+  }
+
+  // Toggle styles
+  summary {
+    --icon-plus-rotate: 90deg;
+    box-shadow: inset 0 calc(-1 * var(--border-width)) 0 0 var(--accent-color);
+    font-size: scale-clamp((375px: 18px, $layout-text-scale-end-bp: 22px));
+    font-weight: bold;
+    line-height: 1;
+    list-style: none;// hide marker in Chrome and Firefox
+    padding-block: var(--padding-vert);
+    padding-inline-end: calc(var(--padding-horz) + var(--icon-size) + 10px);
+    padding-inline-start: var(--padding-horz);
+    position: relative;// required for custom marker
+    transition: background-color 180ms ease, box-shadow 180ms ease;
+
+    // OPTIONAL: Rotate +/x marker on hover
+    @include button-attention {
+      --border-width: 6px;
+
+      &:before,
+      &:after {
+        @include rotate90;
+      }
+    }
+
+    @include root-add('[open]') {
+      @include font-smoothing;
+      background-color: var(--accent-color);
+      color: var(--accent-color-text);
+    }
+
+    // Hide the default marker in all browsers
+    &::marker,
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    // Custom +/x marker
+    &:before,
+    &:after {
+      border-top: var(--icon-stroke) solid currentColor;
+      content: '';
+      position: absolute;
+      right: var(--padding-horz);
+      top: 50%;
+      transform-position: 50% 50%;
+      translate: 0 -50%;
+      transition: rotate 250ms ease, translate 250ms ease;
+      width: var(--icon-size);
+      will-change: transform;
+    }
+
+    &:before {
+      @include root-add('[open]') {
+        rotate: 45deg;
+      }
+    }
+
+    &:after {
+      rotate: 90deg;
+
+      @include root-add('[open]') {
+        rotate: 135deg;
+      }
+    }
+
+    // OPTIONAL: Custom SVG chevron marker
+    // &:after {
+    //   aspect-ratio: 2/1;
+    //   background-image: svg-url($svg-chev-down, (fill: #000));
+    //   background-repeat: no-repeat;
+    //   background-size: 100%;
+    //   content: '';
+    //   position: absolute;
+    //   right: var(--padding-horz);
+    //   top: 50%;
+    //   transform-position: 50% 50%;
+    //   transform: translateY(-50%);
+    //   transition: transform 250ms ease;
+    //   width: var(--icon-size);
+    // }
+
+    // OPTIONAL: Custom +/- marker
+    // &:before,
+    // &:after {
+    //   border-top: var(--icon-stroke) solid currentColor;
+    //   content: '';
+    //   position: absolute;
+    //   right: var(--padding-horz);
+    //   top: 50%;
+    //   transform-position: 50% 50%;
+    //   translate: 0 -50%;
+    //   transition: rotate 250ms ease, translate 250ms ease;
+    //   width: var(--icon-size);
+    // }
+    //
+    // &:after {
+    //   rotate: 90deg;
+    //
+    //   @include root-add('[open]') {
+    //     rotate: 180deg;
+    //   }
+    // }
+
+    // Add margin above content when expanded
+    & + * {
+      margin-top: var(--content-vert-margin);
+    }
+  }// end summary
+
+  // Add margin below content
+  & > *:last-child {
+    margin-bottom: var(--content-vert-margin);
+  }
+}// end wp-block-details

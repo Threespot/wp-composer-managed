@@ -1,0 +1,47 @@
+# Static checks on every pull request and push to main: php -l, phpcs,
+# phpstan, phpunit (`composer ci`). Checks only: Pantheon builds and deploys
+# the site itself (external repository + Integrated Composer), so nothing here
+# talks to Pantheon.
+name: Static checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: static-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  composer-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Same JSON as the Pantheon COMPOSER_AUTH secret (premium plugin repos).
+      COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: redis
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache Composer downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ hashFiles('composer.lock', 'web/app/themes/sage/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies (root + theme)
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: composer ci
+        run: composer ci

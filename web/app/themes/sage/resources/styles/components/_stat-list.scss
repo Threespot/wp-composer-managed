@@ -1,0 +1,55 @@
+//------------------------------------------------------------------------
+// Stat List block (Figma "Stat List" 60-24150)
+// https://github.com/Threespot/nmhc/issues/12
+//
+// Takes the width of its container: full width on its own, or the column
+// width inside core Columns (.wp-block-column is a container too).
+// Narrow (no mobile frame in Figma): the text sits under the value.
+// From 480px: value and text side by side, as drawn at 635px.
+//
+// Colors follow currentColor, so the block works inside dark Groups.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.StatList {
+  $bp-row: 480px;
+
+  @include default-block-margins;
+
+  &-list {
+  }
+
+  &-item {
+    border-block-end: 1px solid color-mix(in srgb, currentColor 10%, transparent);// Figma rgb(0 0 0 / 10%)
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-block: 8px;
+
+    @container (min-width: #{$bp-row}) {
+      align-items: flex-start;
+      flex-direction: row;
+      gap: 24px;
+      justify-content: space-between;
+    }
+  }// end item
+
+  &-value {
+    @include h5;
+
+    @container (min-width: #{$bp-row}) {
+      white-space: nowrap;
+    }
+  }// end value
+
+  &-text {
+    color: color-mix(in srgb, currentColor 70%, transparent);// Figma 70% opacity
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;// <dd> indent
+
+    @container (min-width: #{$bp-row}) {
+      flex: 0 1 262px;// Figma width at 635px
+    }
+  }// end text
+}// end StatList

@@ -1,0 +1,40 @@
+//------------------------------------------------------------------------
+// Content Tag (Figma "Special Content Tags" 184-23793)
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.ContentTag {
+  $selector: &;
+  align-items: center;
+  display: inline-flex;
+  font-family: var(--graphik);
+  font-size: 14px;
+  font-weight: normal;
+  gap: 4px;
+  line-height: 1.5;
+
+  // Dot
+  &:is(#{$selector}--member-benefit, #{$selector}--public, #{$selector}--active)::before {
+    background-color: var(--content-tag-dot-color, currentColor);
+    border-radius: 50%;
+    content: '';
+    flex-shrink: 0;
+    height: 8px;
+    width: 8px;
+  }
+
+  &--member-benefit {
+    font-weight: bold;
+    letter-spacing: -0.01em;
+  }
+
+  &--public,
+  &--active {
+    --content-tag-dot-color: var(--green);
+
+    &#{$selector}--white {
+      --content-tag-dot-color: var(--green-tint);
+    }
+  }
+
+}// end ContentTag

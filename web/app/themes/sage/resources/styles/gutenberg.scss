@@ -1,0 +1,92 @@
+//------------------------------------------------------------------------
+// Gutenberg editor styles
+// Note: These are loaded in the editor iframe in WP 7 so only affect
+//       blocks. To apply syles outside the editor use admin-fields.scss
+//------------------------------------------------------------------------
+// Threespot CSS reset
+// https://github.com/Threespot/frontline-css-reset
+@use "frontline-css-reset/frontline-css-reset" as *;
+
+// Includes Frontline plus project vars, functions, and mixins
+@use "@styles/globals" as * with ($is-admin--globals: true);
+
+// Base styles (e.g. html, body, @font-face, print)
+@use "base/index" as * with (
+  $is-admin--base: false,
+);
+
+// Shared Threespot base styles
+@use "@threespot/wp-base-styles/base" as *;
+
+// Shared Threespot helper classes
+@use "@threespot/wp-base-styles/helpers" as *;
+
+// Shared Threespot Gutenberg overrides
+@use "@threespot/wp-base-styles/gutenberg" as *;
+
+// Title wrapper
+.editor-visual-editor__post-title-wrapper {
+  margin-top: 50px !important;// requires adjusting "Regenerate" button
+}
+
+// Adjust AI "Regenerate" button position
+.ai-title-toolbar-container {
+  top: -43px !important;
+}
+
+// Title
+.wp-block-post-title {
+  // OPTIONAL: Reduce title font-size in editor
+  // --heading-size: #{scale-clamp((375px: 30px, $layout-text-scale-end-bp: 40px))};
+  @include post-title;
+  margin-bottom: 2rem !important;
+  text-transform: none !important;// reveal any capitalization errors
+}
+
+// Set max-width on title and content containers
+.editor-visual-editor__post-title-wrapper,
+.is-root-container {
+  margin-inline: auto;
+  padding-inline: var(--layout-padding-inline);
+}
+
+// Apply richtext styles to block content wrappers
+// Note: Accordion, Cover, and Media & Text blocks have inner wrappers we can’t add
+//       “u-richtext” to in the admin since add_filter('render_block') only works
+//       on the public site, and the “blocks.getBlockDefaultClassName” JS hook
+//       only allows us to add a class to the outer wrapper.
+:is(
+  .is-root-container,
+  .wp-block-accordion-panel,
+  .wp-block-cover__inner-container,
+  .wp-block-media-text__content
+) {
+  font-size: var(--default-text-scale);
+  @include richtext;
+}
+
+// Parent wrapper of editor content
+.is-root-container {
+  background-color: var(--default-bg-color);
+  color: var(--default-text-color);
+  padding-bottom: 1.5em;// breathing room above metaboxes
+  padding-inline: var(--layout-padding-inline);
+}
+
+// OPTIONAL: Use wide layout for all top-level ACF block fields
+// Note: Both selectors are required since some sites may not be
+//       using the iframe editor experience everywhere.
+// https://developer.wordpress.org/block-editor/reference-guides/block-api/block-api-versions/block-migration-for-iframe-editor-compatibility/
+// .acf-block-component[class*="wp-block-acf-"],
+// .is-root-container > .acf-block-fields[class*="wp-block-acf-"] {
+//   max-width: $layout-max-width !important;
+//
+//   // But not when inside of group blocks
+//   .wp-block-group & {
+//     left: auto !important;
+//     margin-left: auto !important;
+//     margin-right: auto !important;
+//     right: auto !important;
+//     width: 100% !important;
+//   }
+// }

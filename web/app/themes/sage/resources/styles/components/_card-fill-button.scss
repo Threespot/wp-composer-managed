@@ -1,0 +1,118 @@
+//------------------------------------------------------------------------
+// Fill card with button (Figma "Fill Card with button" 184-23806)
+//
+// State A: the banner's dark color with white text and the Lite button.
+// State B (hover and focus, AC-11): the tint fades in, the text turns black
+// and the button turns Dark. The tint is a layer that fades, so only
+// opacity animates (D9). The button is the stretched link, so the whole card
+// is clickable, and hovering or focusing the card shows the button's hover
+// state too.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.FillButtonCard {
+  $selector: &;
+  @include card-root;
+  @include font-smoothing;
+  @include icon-hover(":has(:hover, :focus-visible)", (arrow-right, arrow-up-right));
+  @include card-fill-layers(var(--banner-color-dark), var(--banner-color-tint));// Figma --blue, --green and --purple variants
+  --theme-text-color: #fff;
+  color: var(--theme-text-color);
+
+  &:has(:hover, :focus-visible) {
+    --theme-text-color: #000;
+    color: var(--theme-text-color);
+  }
+
+  &-wrap {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+
+    @container (min-width: 480px) {
+      padding: 24px;
+    }
+  }
+
+  &-text {
+  }
+
+  &-title {
+    --heading-size: #{$card-title-size-narrow};
+    @include h4;
+
+    @container (min-width: 480px) {
+      --heading-size: #{$card-title-size-wide};
+    }
+  }
+
+  &-body {
+    @include card-excerpt;
+
+    @container (min-width: 480px) {
+      @include card-excerpt($wide: true);
+    }
+  }
+
+  // The link: static, so its stretched ::after fills the card root. The
+  // button's own background moves to &-button-label, which stays positioned.
+  &-button {
+    @include card-link($stretch: true);
+    color: var(--button-color);// card-link inherits the card's color otherwise
+    isolation: auto;
+    padding: 0;
+    position: static;
+
+    &::before {
+      display: none;// painted by &-button-label::before instead
+    }
+
+    // State B shows the Dark button, in its hover state
+    #{$selector}:has(:hover, :focus-visible) & {
+      --button-bg-color: #000;
+      --button-clip: 0px;
+      --button-color: #fff;
+      --button-hover-bg-color: #000;
+      --button-hover-color: #fff;
+
+      .Icon {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+
+  // The button's box and growing background, which button-animated-icon()
+  // draws on the button itself elsewhere (mixins/_button-mixins.scss)
+  &-button-label {
+    border-radius: inherit;
+    display: inline-block;
+    isolation: isolate;
+    padding: 12px var(--button-padding-end, 20px) 12px 20px;
+    position: relative;
+
+    @include button-grow-background;
+  }
+
+  &-icon {
+    --icon-gap: 10px;
+  }
+
+  // No link (e.g. the prior authorization confirmation, member pages M3): no button, and the card
+  // keeps State A, even when the pointer is over its text
+  &--static:has(:hover, :focus-visible) {
+    --theme-text-color: #fff;
+    color: var(--theme-text-color);
+
+    &::before {
+      opacity: 1;
+    }
+
+    &::after {
+      opacity: 0;
+    }
+  }
+
+}// end FillButtonCard

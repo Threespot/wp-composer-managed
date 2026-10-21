@@ -1,0 +1,97 @@
+//------------------------------------------------------------------------
+// Table (Figma "Table Elements" 184-25025)
+// Opt-in class for a <table class="Table">. It stands alone (it doesn't include
+// table-styles() from mixins/_table-mixin.scss, which styles the core Table block
+// with a different look: 2px body rule, striped footer, larger padding).
+//
+// Markup:
+//   <table class="Table">
+//     <thead><tr><th>Name</th>...</tr></thead>
+//     <tbody><tr><th scope="row">Row</th><td>...</td></tr></tbody>
+//   </table>
+//
+// Sortable column (unused until N4 is answered): put a button in the <th> and set
+// aria-sort="ascending|descending" on the <th>. The arrow shows the sort direction.
+//   <th aria-sort="ascending">
+//     <button class="Table-sort" type="button">Name {arrow-down icon}</button>
+//   </th>
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Table {
+  --table-cell-gap: 16px;// FIXME: guess, no Figma value (node 184-25025)
+  border-collapse: separate;// collapsed borders can cause a horizontal scrollbar (browser bug)
+  border-spacing: 0;
+  table-layout: fixed;// columns share the width equally
+  width: 100%;
+
+  // Header cells
+  thead :where(th, td) {
+    @include h6;
+    border-bottom: 1px solid currentColor;
+    padding-block: 8px;
+    padding-inline: 0 var(--table-cell-gap);
+    text-align: start;
+    vertical-align: bottom;
+  }
+
+  // Body cells: the first one is bold
+  tbody :where(th, td) {
+    border-bottom: 1px solid currentColor;
+    font-family: var(--graphik);
+    font-size: var(--default-text-scale);
+    font-weight: normal;
+    line-height: 1.5;
+    padding-block: 8px;
+    padding-inline: 0 var(--table-cell-gap);
+    text-align: start;
+    vertical-align: top;
+
+    &:first-child {
+      font-weight: bold;
+    }
+  }
+
+  // Sort button in a header cell (no Figma): the header type plus the arrow-down icon
+  &-sort {
+    --icon-gap: 8px;// FIXME: guess, no Figma value (node 184-25025)
+    align-items: center;
+    background-color: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    letter-spacing: inherit;
+    padding: 0;
+    text-align: inherit;
+    text-transform: inherit;
+
+    // Not sorted by this column: a faint arrow
+    .Icon {
+      // No Figma state (node 184-25025). 60% meets WCAG 1.4.11 (at least 5.3:1) and
+      // APCA Lc 45 for small icons (at least Lc 47) on white, every tint and every dark color
+      opacity: 0.6;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: opacity $icon-duration $icon-easing,
+                    transform $icon-duration $icon-easing;
+      }
+    }
+
+    @include icon-hover(":is(:hover, :focus-visible)", (arrow-down));
+
+    th[aria-sort="ascending"] &,
+    th[aria-sort="descending"] & {
+      .Icon {
+        opacity: 1;
+      }
+    }
+
+    // Arrow down = descending, up = ascending
+    th[aria-sort="ascending"] & .Icon {
+      transform: rotate(180deg);
+    }
+  }// end sort
+
+}// end Table

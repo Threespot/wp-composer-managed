@@ -1,0 +1,29 @@
+{
+  "title": "CLIENT WordPress Admin",
+  "category": "LOGIN",
+  "tags": ["wordpress", "admin"],
+  "urls": [
+    {
+      "label": "Lando",
+      "href": "https://APP.lndo.site/"
+    },
+    {
+      "label": "CLIENT Pantheon Dev",
+      "href": "https://dev-APP.pantheonsite.io/"
+    },
+    {
+      "label": "CLIENT Pantheon Test",
+      "href": "https://test-APP.pantheonsite.io/"
+    },
+    {
+      "label": "CLIENT Pantheon Live",
+      "href": "https://live-APP.pantheonsite.io/"
+    },
+    {
+      "label": "DOMAIN",
+      "primary": true,
+      "href": "https://DOMAIN"
+    }
+  ],
+  "fields": []
+}

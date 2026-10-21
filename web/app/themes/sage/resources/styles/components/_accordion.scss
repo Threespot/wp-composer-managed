@@ -1,0 +1,64 @@
+//------------------------------------------------------------------------
+// Accordion item (Figma FAQs 10-7670, "Sidebar Accordion")
+// partials/accordion-item.blade.php, opened by modules/expandables.js
+// (the button's data-expands names the panel).
+//
+// Plus icon (partials: App\icon_args('plus')) turns into a minus when open by
+// scaling its vertical bar away. Only transform animates, and the panel's
+// grid-template-rows comes from the expandable() mixin.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Accordion {
+  border-block-start: 1px solid var(--gray-tint);// Figma #e9e9e9
+
+  &-heading {
+    margin: 0;
+  }
+
+  &-button {
+    // The CSS reset gives buttons a border and background
+    align-items: flex-start;
+    background-color: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    text-align: start;
+    width: 100%;
+
+    @include h5;// Figma: Graphik Compact Bold 22px (the h5 style)
+    @include icon-hover;
+
+    // Figma: the icon sits in a 26px row (8px above and below) next to the title
+    .Icon {
+      --icon-gap: 0;
+      margin-block: 8px;
+    }
+
+    // Open: the vertical bar shrinks away, leaving a minus
+    &[aria-expanded="true"] .Icon--plus .Icon-bar--v {
+      transform: scaleY(0);
+    }
+  }
+
+  &-title {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  &-panel {
+    @include expandable();
+
+    // Block spacing goes on the wrapper's children, never on the wrapper
+    &-wrap {
+      padding-inline-start: 27px;// icon 11px + 16px gap, so the answer lines up with the title
+
+      > :last-child {
+        padding-block-end: 16px;
+      }
+    }
+  }// end panel
+}// end Accordion

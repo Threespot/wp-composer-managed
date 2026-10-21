@@ -1,0 +1,25 @@
+//------------------------------------------------------------------------
+// Block placeholder (editor only)
+// partials/block-placeholder: shown in the editor when a custom block has
+// nothing to show yet. The dashed box marks the block so authors can click it.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.BlockPlaceholder {
+  // Fill the space the missing content would take when the block lays out with flexbox
+  align-self: stretch;
+  border: 2px dashed color-mix(in srgb, currentColor 50%, transparent);
+  border-radius: 4px;
+  flex: 1 1 auto;
+  padding: 24px;
+
+  &-message {
+    font-weight: bold;
+    margin: 0;
+  }
+
+  &-help {
+    margin: 4px 0 0;
+  }
+
+}// end BlockPlaceholder

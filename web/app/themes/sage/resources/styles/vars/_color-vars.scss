@@ -1,0 +1,55 @@
+// -------------------------------------------------------------------------
+// Color variables
+//
+// Variable names in this files should describe the color (e.g. “blue”)
+// instead of how it’s used (e.g. “link-primary”). Those type of semantic
+// variables should be defined in _theme.scss.
+//
+// If you can’t think of another name for a similar color try this site:
+// http://chir.ag/projects/name-that-color/
+//
+// Note: If you need to use a color var with opacity, create a separate
+//       var using rgb() syntax (e.g. --yellow-rgb: 255, 255, 0)
+//       Then use that rgb var with rgba() (e.g. rgba(var(--yellow-rgb), 0.2))
+//
+//       See Slack thread for more details:
+//       https://threespot.slack.com/archives/C04S5G4P4FR/p1726061189751779
+// -------------------------------------------------------------------------
+:root {
+  // Background colors
+  //---------------------------------
+  --blue: #002ad4;
+  --blue-dark: #000c49;
+  --blue-light: #b1d4ff;
+  --gray: #ccc;// used for borders
+  --offwhite: #fafafa;// used for table stripes, <pre>, <kbd>, and disabled inputs
+  --yellow: #ffdc55;// for text highlight
+
+  // Text colors
+  //---------------------------------
+  --text-blue-dark: var(--blue-dark);
+  --text-blue-light: var(--blue-light);
+  --text-gray-light: #767676;
+  --text-red: #eb0c00;
+
+  // Shadows
+  //----------------------------
+  --card-shadow: 0 4px 20px 0 rgba(0 0 0 / 0.15);
+}
+
+// Default block colors
+// Used to generate WP helper classes:
+//   .has-[name]-background-color
+//   .has-[name]-color
+// Used by _block-color-helpers.scss and _layout-helpers.scss
+// TODO: Update theme.json with any client-usable colors
+//---------------------------------
+$block-background-colors: (
+  'black',
+  'blue',
+  'blue-dark',
+  'blue-light',
+);
+
+// OPTIONAL: Text color helper classes
+$block-text-colors: ();

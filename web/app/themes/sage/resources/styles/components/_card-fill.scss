@@ -1,0 +1,106 @@
+//------------------------------------------------------------------------
+// Fill card (Figma "Fill Card Link" 184-23653)
+//
+// Dark at rest; on hover the tint fades in over it, the text turns black and
+// the arrow fades in. The tint is a layer that fades, so only opacity
+// animates (D9).
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.FillCard {
+  $selector: &;
+  --fill-card-color: var(--banner-color-dark);// Figma dark (184-23654)
+  --fill-card-hover-color: var(--banner-color-tint);// Figma tint (184-23676)
+  @include card-root;
+  @include card-arrow;
+  @include font-smoothing;
+  @include card-fill-layers(var(--fill-card-color), var(--fill-card-hover-color));
+  --theme-text-color: #fff;
+  color: var(--theme-text-color);
+
+  &:has(:hover, :focus-visible) {
+    --theme-text-color: #000;
+    color: var(--theme-text-color);
+  }
+
+  &-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px;
+
+    @container (min-width: 480px) {
+      padding: 24px;
+    }
+  }
+
+  &-text {
+  }
+
+  &-title {
+    --heading-size: #{$card-title-size-narrow};
+    @include h4;
+
+    @container (min-width: 480px) {
+      --heading-size: #{$card-title-size-wide};
+    }
+  }
+
+  &-link {
+    @include card-link($stretch: true);
+  }
+
+  &-icon {
+  }
+
+  &-excerpt {
+    @include card-excerpt;
+
+    // Description Override (WYSIWYG): paragraphs, and links that sit above
+    // the stretched title link
+    p + p {
+      margin-top: 8px;
+    }
+
+    a {
+      @include card-inner-link;
+    }
+
+    @container (min-width: 480px) {
+      @include card-excerpt($wide: true);
+    }
+  }
+
+  // Figma 70% white at rest, 70% black on hover (184-23654, 184-23676). Set both colors:
+  // Chrome doesn't recompute color-mix() with currentColor when the card's color changes
+  // on hover, so the rows stayed white on the tint.
+  &-meta {
+    color: rgb(255 255 255 / 70%);
+    font-size: 14px;
+    line-height: 1.5;
+
+    #{$selector}:has(:hover, :focus-visible) & {
+      color: rgb(0 0 0 / 70%);
+    }
+  }
+
+  &-meta-row {
+    border-top: 1px solid rgb(255 255 255 / 20%);// Figma 184-23654
+
+    #{$selector}:has(:hover, :focus-visible) & {
+      border-top-color: rgb(0 0 0 / 20%);// Figma 184-23676
+    }
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 96px 1fr;
+    padding-block: 4px;
+  }
+
+  &-meta-label {
+    font-weight: bold;
+  }
+
+  &-meta-value {
+  }
+
+}// end FillCard

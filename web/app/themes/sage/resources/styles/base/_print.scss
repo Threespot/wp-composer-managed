@@ -1,0 +1,70 @@
+// -------------------------------------------------------------------------
+// Print Styles (based on HTML5 Boilerplate)
+//
+// stylelint-disable no-important, no-color-literals
+// -------------------------------------------------------------------------
+@media print {
+  :root {
+    --layout-padding-inline: 0 !important;
+  }
+
+  *,
+  *:before,
+  *:after {
+    background: #fff !important;
+    color: #000 !important;// black prints faster
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  main a[href]:not([type="button"]) {
+    text-decoration: underline !important;
+  }
+
+  img {
+    height: auto !important;
+    max-width: 100% !important;
+  }
+
+  blockquote,
+  figure,
+  img,
+  pre,
+  tr {
+    break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    orphans: 2;
+    widows: 2;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  // Page margins
+  @page {
+    margin: 0.75in 0.75in 1in;
+  }
+}

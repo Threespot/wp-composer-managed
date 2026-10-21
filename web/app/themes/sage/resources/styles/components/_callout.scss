@@ -1,0 +1,105 @@
+//------------------------------------------------------------------------
+// Callout block (Figma "Callout" 10-6177, set 184-23979)
+// https://github.com/Threespot/nmhc/issues/15
+//
+// The Figma variants are Desktop and Mobile, so they are container
+// breakpoints here, not modifiers. The default (10-6177) is Desktop.
+// Mobile: text above the actions. From 640px: text left, actions right.
+//
+// Background is the page's dark banner color in both views (Megan, answer 10),
+// with white text. The Lite button (light tint, black text) works on every
+// palette color.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.Callout {
+  $bp-row: 640px;
+
+  --theme-text-color: #fff;
+  background-color: var(--banner-color-dark);
+  // Light Groups and the member view's default Groups set this to white; unset it so btn-lite keeps its own light tint (the Callout's background is --banner-color-dark)
+  --secondary-button-bg-color: initial;
+  color: var(--theme-text-color);
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 16px;
+
+  @include default-block-margins;
+
+  @container (min-width: #{$bp-row}) {
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 32px;
+    justify-content: space-between;
+    padding: 32px;
+  }
+
+  &-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    @container (min-width: #{$bp-row}) {
+      flex: 0 1 723px;// Figma width at 1302px
+    }
+  }// end text
+
+  &-heading {
+    @include h4;
+
+    margin: 0;
+  }
+
+  &-body {
+    font-size: 16px;
+    line-height: 1.5;
+
+    @container (min-width: #{$bp-row}) {
+      font-size: 20px;
+    }
+
+    > * {
+      margin-block: 0;
+    }
+
+    > * + * {
+      margin-block-start: 1em;
+    }
+
+    a {
+      color: inherit;
+    }
+  }// end body
+
+  &-actions {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    @container (min-width: #{$bp-row}) {
+      flex: 0 0 auto;
+      gap: 16px;
+    }
+  }// end actions
+
+  &-primary {
+    // Disable links in editor
+    :where(.block-editor-iframe__html, .wp-admin) & {
+      pointer-events: none;
+    }
+
+    @container (min-width: #{$bp-row}) {
+      align-self: stretch;// Figma: the buttons share the column width
+      justify-content: center;
+    }
+  }// end primary
+
+  &-secondary {
+    // Disable links in editor
+    :where(.block-editor-iframe__html, .wp-admin) & {
+      pointer-events: none;
+    }
+  }// end secondary
+}// end Callout

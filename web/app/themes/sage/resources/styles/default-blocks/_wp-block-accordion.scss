@@ -1,0 +1,144 @@
+//------------------------------------------------------------------------
+// Accordion block
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/accordion/style.scss
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/accordion-heading/style.scss
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/accordion-item/style.scss
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/accordion-panel/style.scss
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// Note: Styles should match details block
+.wp-block-accordion {
+  $bp-end-fullwidth: 600px;
+  $bp-end-scale: $layout-max-width-bp;
+  --border-width: 3px;
+  --content-vert-margin: 24px;
+  --easing: #{easing("easeOutCubic")};
+  --speed: 450ms;
+  --icon-size: 14px;
+  --icon-stroke: 1.5px;// OPTIONAL for plus sign marker
+  --padding-horz: #{scale-clamp((375px: 24px, $bp-end-scale: 32px))};// applied to summary toggle and content
+  --padding-vert: #{scale-clamp((375px: 16px, $bp-end-scale: 24px))};// applied to summary toggle
+  clear: both;
+  @include default-block-margins;
+
+  &-item {
+    &:not(:first-child) {
+      margin-top: 8px;
+    }
+  }// end item
+
+  &-heading {
+    &__toggle {
+      box-shadow: inset 0 calc(-1 * var(--border-width)) 0 0 var(--accent-color);
+      font-size: scale-clamp((375px: 18px, $layout-text-scale-end-bp: 22px));
+      font-weight: bold;
+      line-height: 1;
+      list-style: none;// hide marker in Chrome and Firefox
+      padding-block: var(--padding-vert);
+      padding-inline-end: calc(var(--padding-horz) + var(--icon-size) + 10px);
+      padding-inline-start: var(--padding-horz);
+      position: relative;// required for custom marker
+      transition: background-color 180ms ease, box-shadow 180ms ease;
+
+      // OPTIONAL: Rotate +/x marker on hover
+      @include button-attention {
+        --border-width: 6px;
+
+        &:before,
+        &:after {
+          @include rotate90;
+        }
+      }
+
+      // Note: Use `.is-open` in admin since aria-expanded isn’t applied
+      &[aria-expanded="true"],
+      .is-open & {
+        @include font-smoothing;
+        background-color: var(--accent-color);
+        color: var(--accent-color-text);
+
+        // Rotate icon
+        &:before {
+          rotate: 45deg;
+        }
+
+        &:after {
+          rotate: 135deg;
+        }
+      }
+
+      // Custom +/x marker
+      &:before,
+      &:after {
+        border-top: var(--icon-stroke) solid currentColor;
+        content: '';
+        position: absolute;
+        right: var(--padding-horz);
+        top: 50%;
+        transform-position: 50% 50%;
+        translate: 0 -50%;
+        transition: rotate 250ms ease, translate 250ms ease;
+        width: var(--icon-size);
+        will-change: transform;
+      }
+
+      &:after {
+        rotate: 90deg;
+      }
+
+      &-title {
+        text-decoration: none !important;
+      }// end title
+
+      // Hide original WP icon
+      &-icon {
+        display: none !important;
+      }
+    }// end toggle
+  }// end heading
+
+  &-panel {
+    background-color: var(--default-bg-color);
+    color: var(--default-text-color);
+    padding-inline: var(--padding-horz);
+
+    // Animate panel expand (currently works in Chrome/Edge)
+    // Note: WP 7.1 applies `hidden="until-found"` to the closed panel (WP 7.0 used `inert`)
+    // 1. Transition the height using pure CSS in supported browsers (no Safari support)
+    //    https://caniuse.com/mdn-css_types_calc-size
+    //    https://codepen.io/ZoranJambor/pen/jOorzPv?editors=0100
+    // 2. Adding “overflow: hidden” prevents VoiceOver in Safari from accessing the content
+    //    https://bugs.webkit.org/show_bug.cgi?id=295713
+    :where(html:not(.ua-safari)) & {
+      @media (prefers-reduced-motion: no-preference) {
+        height: 0;// [1]
+        overflow: hidden;// [2]
+        transition-behavior: allow-discrete;// [1]
+        transition-duration: var(--speed);// [1]
+        transition-property: content-visibility, height;// [1]
+        transition-timing-function: var(--easing);// [1]
+      }
+    }
+
+    // Open state (WP removes the "hidden" attribute)
+    &:not([hidden]) {
+      :where(html:not(.ua-safari)) & {
+        @media (prefers-reduced-motion: no-preference) {
+          height: auto;// [2]
+          height: calc-size(auto, size);// [1]
+        }
+      }
+    }
+
+    // Add margin above content
+    & > *:first-child {
+      margin-top: var(--content-vert-margin);
+    }
+
+    // Add margin below content
+    & > *:last-child {
+      margin-bottom: var(--content-vert-margin);
+    }
+  }// end panel
+}// end wp-block-accordion

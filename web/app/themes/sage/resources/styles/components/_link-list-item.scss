@@ -1,0 +1,109 @@
+//------------------------------------------------------------------------
+// Link list item (Figma "mls multi-link list item" 184-24843)
+//
+// The link is stretched over the whole item, so hovering anywhere on it
+// (or focusing the link) darkens both rules and moves the icon.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.LinkListItem {
+  $selector: &;
+  --link-list-item-rule-color: var(--gray-tint);
+  --link-list-item-rule-hover-color: var(--gray);
+  --icon-gap: 0;
+  align-items: center;
+  border-block: 1px solid var(--link-list-item-rule-color);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-block-end: -1px;// stacked items share one rule
+  padding-block: 12px;
+  position: relative;
+
+  @container (min-width: 480px) {
+    padding-block: 16px;
+  }
+
+  // Dark hover rules sit on a layer over the item's own borders, so only
+  // opacity animates
+  &::before {
+    border-block: 1px solid var(--link-list-item-rule-hover-color);
+    content: '';
+    inset: -1px 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity $icon-duration $icon-easing;
+    }
+  }
+
+  @include icon-hover(":has(:hover, :focus-visible)", (moving-arrow, download));
+
+  &:has(:hover, :focus-visible) {
+    z-index: 1;// keep the darker rule above the next item's
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &--white {
+    --link-list-item-rule-color: rgb(255 255 255 / 20%);// Figma rgba(255,255,255,0.2), stays white in the member view
+    --link-list-item-rule-hover-color: #fff;
+    --moving-arrow-rest-color: transparent;// Figma draws no arrow at rest
+  }
+
+  &-text {
+    min-width: 0;
+  }
+
+  &-link {
+    @include h4;
+    color: inherit;
+    text-decoration: none;
+
+    // Stretched link
+    &::after {
+      content: '';
+      inset: 0;
+      position: absolute;
+    }
+
+    // Disable links in editor
+    :where(.block-editor-iframe__html, .wp-admin) & {
+      pointer-events: none;
+    }
+  }
+
+  &-description,
+  &-meta {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+
+  &-icons {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+  }
+
+  &-tag {
+  }
+
+  &-icon {
+    // Figma draws only the link type smaller on mobile (18px moving arrow)
+    &.Icon--moving-arrow {
+      --icon-scale: 0.72;
+
+      @container (min-width: 480px) {
+        --icon-scale: 1;
+      }
+    }
+  }
+
+}// end LinkListItem

@@ -1,0 +1,18 @@
+// -------------------------------------------------------------------------
+// Focus ring mixin
+//
+// Every clickable element gets this ring, in the text color, through the
+// :where(:focus-visible) rule in base/_base.scss. The browser's default ring
+// isn't used: Safari's is below 3:1 on the dark palette colors, even with
+// color-scheme: dark (Ted, 2026-10-20).
+//
+// The ring follows --theme-text-color, so a section or card that changes its
+// text color must set --theme-text-color too, or the ring keeps the color of
+// the section around it. Adjust the ring site-wide with the --focus-ring-*
+// vars in vars/_theme.scss, or set --focus-ring-color on one component.
+// -------------------------------------------------------------------------
+
+@mixin focus-ring() {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color, var(--theme-text-color));
+  outline-offset: var(--focus-ring-offset);
+}

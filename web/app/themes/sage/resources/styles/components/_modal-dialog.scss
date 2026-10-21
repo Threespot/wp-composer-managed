@@ -1,0 +1,17 @@
+//------------------------------------------------------------------------
+// Modal styles for https://a11y-dialog.netlify.app
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// Prevent scrolling when a dialog is open
+html:has([role='dialog']:not([aria-hidden='true'])) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+// Allow scrolling the dialog content when taller than viewport
+[role='dialog'] [role='document'] {
+  max-height: calc(100dvh - var(--modal-dialog-inset, 30px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}

@@ -1,0 +1,162 @@
+//------------------------------------------------------------------------
+// Default pulquote block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/pullquote/style.scss
+//
+// <figure class="wp-block-pullquote">
+//   <blockquote>
+//     <p>…<br>…</p>
+//     <cite>…</cite>
+//   </blockquote>
+// </figure>
+//
+// NOTE: Pullquotes don’t support inner blocks (just a <p> tag with line breaks)
+//       but they support layouts and custom border styles (disabled in theme.json)
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+// OPTIONAL: We’re always applying a background color to pullquotes
+.wp-block-pullquote {
+  $bp-align: 600px;
+  $bp-end-scale: 1024px;
+  $float-horz-margin: 40px;
+  --floated-margin: #{scale-clamp(($bp-align: 30px, $bp-end-scale: 50px))};
+  --icon-width: 48px;
+  --floated-max-width: 420px;
+  --text-max-width: 966px;
+  align-items: center;
+  clear: both;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: scale-clamp((375px: 42px, $bp-end-scale: 50px), $units: cqw);
+  padding-inline: scale-clamp((375px: 20px, $bp-end-scale: 30px), $units: cqw);
+  padding-top: 40px;
+  position: relative;// for quote icon
+  @include default-block-margins;
+  @include layout-block-outset;
+
+  // OPTIONAL: Apply default background color when none was set in the editor
+  &:not(.has-background) {
+    background-color: var(--blue-light);
+
+    // Remove background color if inside of a block with a background color (e.g. group)
+    .has-background & {
+      background-color: transparent;
+    }
+  }
+
+  // OPTIONAL: Quote icon
+  &__icon {
+    --icon-color: var(--accent-color);
+    display: block;
+    height: auto;
+    margin-bottom: 24px;
+    width: var(--icon-width);
+  }// end icon
+
+  &:not(.alignleft, .alignright) {
+    clear: both;
+  }
+
+  &.alignleft,
+  &.alignright {
+    @media (max-width: $bp-align - 1px) {
+      float: none;
+      margin-inline: auto;
+    }
+
+    @media (min-width: $bp-align) {
+      margin-block: 10px;
+      max-width: min(50%, var(--floated-max-width));
+
+      // Adjust margin in admin since the editor layout is different
+      .block-editor-iframe__html & {
+        --floated-margin: 1.25em;
+      }
+    }
+  }
+
+  &.alignleft {
+    @media (min-width: $bp-align) {
+      clear: left;
+      float: inline-start;
+      margin-inline-end: var(--floated-margin);
+    }
+  }
+
+  &.alignright {
+    @media (min-width: $bp-align) {
+      clear: right;
+      float: inline-end;
+      margin-inline-start: var(--floated-margin);
+    }
+  }
+
+  blockquote {
+    max-width: var(--text-max-width);
+  }
+
+  // Note: All <p> tags get `text-wrap: pretty;` from the CSS reset
+  // https://github.com/Threespot/frontline-css-reset/
+  //
+  p {
+    font-size: scale-clamp((375px: 20px, $bp-end-scale: 22px));
+    font-weight: 300;
+    line-height: 1.3;
+
+    // Custom text wrapping option (see block-defaults.jsx)
+    // https://github.com/Threespot/wp-base-config/blob/main/src/Assets/block-defaults.jsx
+    @include root-add('.text-wrap-balance') {
+      text-wrap: balance;
+    }
+
+    // NOTE: WP automatically converts "…" to “…” so we don’t need to add
+    //       quoation marks with CSS unless the requirements call for them
+    //       to be added regardless of whether authors typed them.
+    //
+    // Notes on “quote” property
+    // https://css-tricks.com/almanac/properties/q/quotes/
+    //
+    // Add opening and closing quotes
+    // NOTE: Don’t define the “quote” property, use browser default
+    // https://css-tricks.com/almanac/properties/q/quotes/
+    // https://w3c.github.io/i18n-discuss/default-quote-styling
+    // https://www.stefanjudis.com/today-i-learned/how-to-use-language-dependent-quotes-in-css/
+    // &:first-child {
+    //   &:before {
+    //     content: open-quote;
+    //   }
+    // }
+    //
+    // &:last-of-type {
+    //   &:after {
+    //     content: close-quote;
+    //   }
+    // }
+  }// end p
+
+  // OPTIONAL: Custom block style to remove quotes (register style in gutenberg.js)
+  // &.is-style-no-quotes {
+  //   p {
+  //     quotes: none;
+  //
+  //     &:before,
+  //     &:after {
+  //       display: none;
+  //     }
+  //   }
+  // }
+
+  cite,
+  &__citation {
+    display: block;
+    font-size: scale-clamp((375px: 18px, $bp-end-scale: 20px));
+    font-size: 16px;
+    margin-top: 1em;
+
+    a {
+      @include link-arrow;
+      @include link-icon;// override arrow if external/download
+    }
+  }
+}// end wp-block-pullquote

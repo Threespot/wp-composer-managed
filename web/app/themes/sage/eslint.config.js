@@ -1,0 +1,1 @@
+../../../../vendor/threespot/wp-base-config/dist/eslint.config.js

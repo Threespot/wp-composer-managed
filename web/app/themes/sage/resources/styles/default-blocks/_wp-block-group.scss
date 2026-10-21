@@ -1,0 +1,50 @@
+//------------------------------------------------------------------------
+// Default group block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/group/style.scss
+//
+// NOTE: We’re adding custom classes in gutenberg.js and setup.php
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.wp-block-group {
+  $selector: &;
+  $bp-end-scale: $layout-max-width-narrow-bp;
+  clear: both;
+  container-type: inline-size;// allow headings to resize
+  @include default-block-margins;
+
+  &:not(.has-background) {
+    --default-block-margin: 1em;
+  }
+
+  // Add padding when there’s a background color
+  &.has-background {
+    padding-block: var(--layout-padding-block);
+    padding-inline: var(--layout-padding-inline);
+  }
+
+  // Row layout
+  &.is-layout-flex {
+    gap: 30px;// FIXME
+
+    .wp-block-button,
+    .wp-block-image {
+      flex-shrink: 0;
+    }
+  }
+
+  // No vert margin custom style
+  &.is-style-no-vert-margin {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  // Undo our custom “layout-wide” styles when inside of groups
+  // (see /default-blocks/_wp-alignment.scss)
+  &:not(.alignfull) .alignwide {
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+  }
+}// end wp-block-group

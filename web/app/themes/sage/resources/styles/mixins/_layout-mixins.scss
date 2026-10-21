@@ -1,0 +1,94 @@
+//------------------------------------------------------------------------
+// Layout mixins
+//------------------------------------------------------------------------
+$is-admin--layout: false !default;
+
+@use "frontline-sass/src/frontline" as *;
+@use "@threespot/wp-base-styles/vars" as *;
+@use "@vars" as *;
+
+// Allow element to span viewport width regardless of parent width
+// NOTE: These styles only work when the parent wrapper is centered.
+// NOTE: These styles will break blocks with parallax backgrounds (e.g. cover)
+@mixin layout-fullwidth($important: false) {
+  $is-admin: $is-admin--layout;
+  left: 50% if(sass($important): !important);
+  position: relative if(sass($important): !important);
+  transform: translateX(-50%) if(sass($important): !important);
+  width: 100vw if(sass($important): !important);
+
+  // We need to recalculate the left offset when there’s a sidebar
+  // .l-sidebar & {
+  //   @media (min-width: $layout-sidebar-bp) {
+  //     left: calc(50% - (#{$layout-sidebar-width} * 0.5));
+  //   }
+  // }
+}
+
+// Helper mixin for setting widths that extend beyond the parent wrapper
+// NOTE: These styles will break blocks with parallax backgrounds (e.g. cover)
+@mixin layout-max-width($max-width) {
+  $is-admin: $is-admin--layout;
+  max-width: $max-width;
+
+  // Only needed if nested inside of another “l-wrap” class
+  // Note: Just checking for [class*="l-wrap"] can result in false positives
+  //       e.g. “Modal-wrap” would match
+  [class^="l-wrap"] &,
+  [class*=" l-wrap"] & {
+    @media (min-width: $layout-max-width-narrow-bp) {
+      left: 50%;
+      position: relative;
+      transform: translateX(-50%);
+      width: calc(100vw - #{$layout-padding-max * 2});
+    }
+  }
+}
+
+// Custom max-width mixins
+@mixin layout-wide() {
+  @include layout-max-width($layout-max-width);
+}
+
+// Global left/right padding mixin, used by _layout-helpers.scss
+@mixin default-padding($props: padding-inline) {
+  @each $prop in $props {
+    #{$prop}: var(--layout-padding-inline);
+  }
+}
+
+// Default block vertical margin
+@mixin default-block-margins() {
+  &:not(:first-child) {
+    margin-top: var(--default-block-margin);
+  }
+
+  &:not(:last-child) {
+    margin-bottom: var(--default-block-margin);
+  }
+}
+
+// OPTIONAL: Allow blocks to shift outside of content well
+@mixin layout-block-outset() {
+  &.alignleft {
+    @media (min-width: $layout-outset-start-bp) {
+      margin-inline-start: scale-clamp(($layout-outset-start-bp: 0px, $layout-outset-end-bp: -$layout-outset-width));
+
+      // Disable in admin since the editor layout is different
+      .block-editor-iframe__html & {
+        margin-inline-start: 0;
+      }
+    }
+  }
+
+  &.alignright {
+    @media (min-width: $layout-outset-start-bp) {
+      margin-inline-end: scale-clamp(($layout-outset-start-bp: 0px, $layout-outset-end-bp: -$layout-outset-width));
+
+      // Disable in admin since the editor layout is different
+      .block-editor-iframe__html & {
+        margin-inline-end: 0;
+      }
+    }
+  }
+}

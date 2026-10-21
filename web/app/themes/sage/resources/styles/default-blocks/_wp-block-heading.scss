@@ -1,0 +1,80 @@
+//------------------------------------------------------------------------
+// Default heading block style overrides
+// https://github.com/WordPress/gutenberg/blob/trunk/packages/block-library/src/heading/style.scss
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.wp-block-heading {
+  --heading-margin-small: 16px;
+  --heading-margin-medium: 32px;
+  --heading-margin-large: 80px;
+
+  // Override custom colors in dark mode
+  &.has-text-color {
+    @media (prefers-color-scheme: dark) {
+      color: inherit !important;
+    }
+  }
+
+  // Stretchy heading override
+  .no-js &.has-fit-text {
+    white-space: normal !important;
+  }
+
+  // Default to “text-wrap: balance” when text is centered
+  &.has-text-align-center {
+    text-wrap: balance;
+  }
+
+  // Custom style options (see block-defaults.jsx)
+  // https://github.com/Threespot/wp-base-config/blob/main/src/Assets/block-defaults.jsx
+  &.clear-both {
+    clear: both;
+  }
+
+  &.text-wrap-balance {
+    text-wrap: balance !important;
+  }
+
+  &.text-wrap-pretty {
+    text-wrap: pretty !important;
+  }
+
+  // Custom margins (see block-defaults.jsx)
+  &.bottom-margin-large {
+    --heading-margin-bottom: var(--heading-margin-large);
+  }
+
+  &.bottom-margin-medium {
+    --heading-margin-bottom: var(--heading-margin-medium);
+  }
+
+  &.bottom-margin-small {
+    --heading-margin-bottom: var(--heading-margin-small);
+  }
+
+  &.bottom-margin-none {
+    --heading-margin-bottom: 0;
+  }
+
+  &.top-margin-large {
+    --heading-margin-top: var(--heading-margin-large);
+  }
+
+  &.top-margin-medium {
+    --heading-margin-top: var(--heading-margin-medium);
+  }
+
+  &.top-margin-small {
+    --heading-margin-top: var(--heading-margin-small);
+  }
+
+  &.top-margin-none {
+    --heading-margin-top: 0;
+  }
+
+  // OPTIONAL: Override default margin when heading precedes certain blocks
+  // &:has(+ .ExampleBlock) {
+  //   margin-top: 60px !important;
+  // }
+}

@@ -1,0 +1,16 @@
+//------------------------------------------------------------------------
+// Custom WP admin styles applied to all admin pages
+//------------------------------------------------------------------------
+// OPTIONAL: Uncomment shared Threespot base vars and mixins if needed
+// @use "@threespot/wp-base-styles/vars" as *;
+// @use "@threespot/wp-base-styles/mixins" as *;
+
+// Shared Threespot admin overrides
+@use "@threespot/wp-base-styles/admin-all" as *;
+
+// OPTIONAL: Hide comments link in the “At a Glance” dashboard widget
+#dashboard_right_now {
+  .comment-count {
+    display: none !important;
+  }
+}

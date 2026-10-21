@@ -1,0 +1,59 @@
+//------------------------------------------------------------------------
+// Latest posts: Issue Post Promo (Figma 19-15823) and Initiative "The Latest" (21-16301)
+// partials/sections/latest-posts.blade.php
+//
+// Eyebrow and heading over List Link cards (_card-list-link.scss), which draw their own
+// rules. Figma puts no padding below: the last card's own padding and the next section's
+// top padding make the gap.
+// --padded: the Initiative's "The Latest" (21-16379), followed by the tinted Resource List,
+// pads below as well. On an Initiative, right after another white section that already pads
+// below (Summary, Campaign Promo), it drops its top padding, so the gap stays one gap.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.LatestPosts {
+  --theme-text-color: #000;
+  background-color: #fff;
+  color: var(--theme-text-color);
+  padding-block-start: scale-clamp((375px: 32px, $layout-max-width-bp: 64px));
+
+  &--padded {
+    padding-block-end: scale-clamp((375px: 32px, $layout-max-width-bp: 64px));
+  }
+
+  :is(.InitiativeSummary, .InitiativeCampaigns) + & {
+    padding-block-start: 0;
+  }
+
+  &-wrap {
+    container-type: inline-size;// the List Link cards and the h2 size read this
+    display: flex;
+    flex-direction: column;
+    gap: scale-clamp((375px: 16px, $layout-max-width-bp: 32px));
+  }
+
+  &-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;// Figma
+  }
+
+  &-eyebrow {
+    margin: 0;
+  }
+
+  &-heading {
+    margin: 0;
+    max-inline-size: 635px;// Figma width
+    text-wrap: pretty;
+  }
+
+  &-list {
+    margin: 0;
+    padding: 0;
+  }
+
+  &-item {
+  }
+
+}// end LatestPosts

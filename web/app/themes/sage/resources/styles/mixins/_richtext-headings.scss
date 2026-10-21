@@ -1,0 +1,70 @@
+//------------------------------------------------------------------------
+// Rich text heading styles
+//
+// Note: Be aware that “text-rendering: optimizeLegibility” can sometimes
+//       result in edge-case issues. Make sure to test if using it.
+//------------------------------------------------------------------------
+@use "frontline-sass/src/frontline" as *;
+@use "@vars" as *;
+
+@mixin h2($include-margin: false) {
+  font-family: var(--default-font-family);
+  font-size: var(--heading-size, #{scale-clamp((375px: 34px, $layout-max-width-narrow: 48px), $units: cqw)});
+  font-weight: bold;
+  line-height: 1.1;
+
+  @if $include-margin {
+    margin-bottom: var(--heading-margin-bottom, 20px);
+    margin-top: var(--heading-margin-top, 50px);
+  }
+}
+
+@mixin h3($include-margin: false) {
+  font-family: var(--default-font-family);
+  font-size: var(--heading-size, #{scale-clamp((375px: 25px, $layout-max-width-narrow: 40px), $units: cqw)});
+  font-weight: 300;
+  line-height: 1.1;
+
+  @if $include-margin {
+    margin-bottom: var(--heading-margin-bottom, 20px);
+    margin-top: var(--heading-margin-top, 50px);
+  }
+}
+
+@mixin h4($include-margin: false) {
+  font-family: var(--default-font-family);
+  font-size: var(--heading-size, #{scale-clamp((375px: 22px, $layout-max-width-narrow: 32px), $units: cqw)});
+  font-weight: bold;
+  line-height: 1.1;
+
+  @if $include-margin {
+    margin-bottom: var(--heading-margin-bottom, 16px);
+    margin-top: var(--heading-margin-top, 50px);
+  }
+}
+
+@mixin h5($include-margin: false) {
+  font-family: var(--default-font-family);
+  font-size: var(--heading-size, #{scale-clamp((375px: 18px, $layout-max-width-narrow: 22px), $units: cqw)});
+  font-weight: bold;
+  line-height: 1.25;
+
+  @if $include-margin {
+    margin-bottom: var(--heading-margin-bottom, 16px);
+    margin-top: var(--heading-margin-top, 50px);
+  }
+}
+
+@mixin h6($include-margin: false) {
+  font-family: var(--default-font-family);
+  font-size: var(--heading-size, #{scale-clamp((375px: 16px, $layout-max-width-narrow: 18px), $units: cqw)});
+  font-weight: 300;
+  letter-spacing: 0.54px;
+  line-height: 1.1;
+  text-transform: uppercase;
+
+  @if $include-margin {
+    margin-bottom: var(--heading-margin-bottom, 14px);
+    margin-top: var(--heading-margin-top, 50px);
+  }
+}

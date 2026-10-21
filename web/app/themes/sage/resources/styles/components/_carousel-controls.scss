@@ -1,0 +1,63 @@
+//------------------------------------------------------------------------
+// Carousel Controls (Figma 184-24799)
+// Previous and Next buttons. The carousel script is WP-5's modules/carousel.js.
+//------------------------------------------------------------------------
+@use "@styles/globals" as *;
+
+.CarouselControls {
+  // FIXME: Figma shows one control, not the pair, so the gap is a guess
+  --carousel-controls-gap: 8px;
+  display: flex;
+  gap: var(--carousel-controls-gap);
+
+  &-button {
+    // The CSS reset gives buttons a border and background
+    --icon-gap: 0;
+    background-color: transparent;
+    border: 0;
+    color: #000;
+    cursor: pointer;
+    display: block;
+    padding: 0;
+    position: relative;
+
+    // The box: --blue-tint at rest, fading to 20% on hover (Figma rgba(230,232,236,0.2) over white)
+    &::before {
+      background-color: var(--blue-tint);
+      content: '';
+      inset: 0;
+      opacity: 1;
+      position: absolute;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: opacity $icon-duration $icon-easing;
+      }
+    }
+
+    &:is(:hover, :focus-visible)::before {
+      opacity: 0.2;
+    }
+
+    // Keep the arrow above the box
+    .Icon {
+      display: block;
+      position: relative;
+    }
+
+    @include icon-hover(":is(:hover, :focus-visible)", (carousel-arrow));
+
+    &--prev {
+      .Icon {
+        scale: -1 1;
+      }
+    }
+  }// end button
+
+  // FIXME: guess, no Figma value (node 184-24799)
+  // On dark backgrounds: the --blue-tint box already reads there, so it stays opaque on hover
+  // (a box at 20% would leave the black arrow on a dark background)
+  &--light &-button:is(:hover, :focus-visible)::before {
+    opacity: 1;
+  }
+
+}// end CarouselControls

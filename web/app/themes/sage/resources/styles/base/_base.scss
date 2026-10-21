@@ -1,0 +1,76 @@
+// -------------------------------------------------------------------------
+// Base Styles
+//
+// stylelint-disable no-important media-feature-name-no-unknown
+// -------------------------------------------------------------------------
+$is-admin: false !default;
+
+@use "@styles/globals" as *;
+
+// 1. Set bg color on html instead of body to ensure it always fills the page
+//    http://css-tricks.com/just-one-of-those-weird-things-about-css-background-on-body/
+html {
+  background-color: var(--default-bg-color);// [1]
+  color: var(--default-text-color);
+
+  // Use native smooth scrolling
+  &.smooth-scroll {
+    scroll-behavior: smooth;
+
+    // Diable smooth scrolling if user has enabled “reduce motion” in their browser/OS
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion#user_preferences
+    @media screen and (prefers-reduced-motion: reduce) {
+      scroll-behavior: auto !important;
+    }
+  }
+
+  // OPTIONAL: Support iOS accessibility text sizes
+  // Note: Only apply on iOS since desktop Safari will look zoomed out
+  // @supports (font: -apple-system-body) → only WebKit/Safari engines.
+  // @media (pointer: coarse) → only iPhone and iPad (including iPadOS)
+  // https://webkit.org/blog/3709/using-the-system-font-in-web-content/
+  // https://web.archive.org/web/20220930195151/https://www.interactiveaccessibility.com/blog/text-resizing-web-pages-ios-using-dynamic-type
+  // https://dev.to/colingourlay/how-to-support-apple-s-dynamic-text-in-your-web-content-with-css-40c0
+  // https://gist.github.com/colingourlay/d95908ec5cd4854c7a5afa06f3989479
+  // stylelint-disable font-family-no-missing-generic-family-keyword
+  @supports (font: -apple-system-body) {
+    @media (pointer: coarse) {
+      font: -apple-system-body;
+    }
+  }
+
+  // OPTIONAL: Add extra margin above jump link targets to offset a fixed header
+  // https://css-tricks.com/fixed-headers-on-page-links-and-overlapping-content-oh-my/
+  // https://caniuse.com/mdn-css_properties_scroll-padding
+  // @if not $is-admin {
+  //   @supports (scroll-padding-top: 0) {
+  //     $vert-offset: 20px;
+  //     scroll-padding-top: calc(var(--layout-header-height) + $vert-offset);
+  //   }
+  // }
+}
+
+// 2. Set “font-family” on body since we’re applying “-apple-system-body” on html element
+// 3. Prevent browsers from automatically adding hyphens by default
+body {
+  &:not(.wp-admin) {
+    font-family: var(--default-font-family);// [2]
+    font-weight: var(--default-font-weight);
+    hyphens: manual;// [3]
+    overflow-x: hidden;// this breaks “position: sticky”
+  }
+} // end body
+
+//------------------------------------------------------------------------
+// Opinionated global default styles not included in CSS reset
+// Note: Use :where() since its specificity is 0, avoiding conflicts
+//------------------------------------------------------------------------
+:where(svg:not([fill])) {
+  fill: currentColor;
+}
+
+// OPTIONAL: Custom text selection color
+// ::selection {
+//   background-color: $some-custom-color;
+//   text-shadow: none;
+// }

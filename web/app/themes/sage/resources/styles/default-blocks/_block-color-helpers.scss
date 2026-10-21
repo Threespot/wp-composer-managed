@@ -1,0 +1,95 @@
+//------------------------------------------------------------------------
+// Block color palette classes (see theme.json)
+//------------------------------------------------------------------------
+@use "sass:list";
+@use "@styles/globals" as *;
+
+// Text colors
+// Note: $block-text-colors is defined in _color-vars.scss
+@each $name in $block-text-colors {
+  .has-#{$name}-color {
+    color: var(--text-#{$name}) !important;
+  }
+}
+
+// Background colors
+// Note: $block-background-colors is defined in _color-vars.scss
+// Note: We’re adding “dark” and “light” as generic classes for
+//       use as the default color in cover blocks.
+$block-background-colors: list.join($block-background-colors, ('dark', 'light'));
+
+@each $name in $block-background-colors {
+  :is(
+    .bg-#{$name},
+    .has-#{$name}-background-color,
+    .wp-block-cover:has(.wp-block-cover__background.has-#{$name}-background-color)
+  ) {
+    --theme-bg-color: var(--#{$name});
+    background-color: var(--theme-bg-color);
+    color: var(--theme-text-color);
+
+    // Update colors for DARK backgrounds
+    // NOTE: We must also update _wp-block-cover.scss (see “.is-light” class)
+    @if list.index(('black', 'blue-dark', 'dark'), $name) {
+      @include font-smoothing;
+      --theme-link-color: var(--blue-light);
+      --theme-text-color: #fff;
+      // --accent-color: var(--blue);// OPTIONAL: Change for dark backgrounds
+      --button-bg-color: var(--blue-light);
+      --button-color: var(--blue-dark);
+      --button-hover-bg-color: var(--blue);
+      --button-hover-color: #fff;
+      --button-outline-color: var(--blue-light);
+      --button-outline-hover-color: var(--blue-dark);
+      // OPTIONAL: Secondary button style
+      // --secondary-button-bg-color: var(--blue-light);
+      // --secondary-button-color: var(--blue-dark);
+      // --secondary-button-hover-bg--color: var(--blue);
+      // --secondary-button-hover-color: #fff;
+
+      // Override any custom text colors inside dark backgrounds
+      // (e.g. if authors changed the color in the editor)
+      .has-text-color {
+        color: var(--theme-text-color) !important;
+      }
+    }
+    // Optional: Update colors for specific backgrounds
+    //           (e.g. if background color matches some buttons)
+    @else if list.index(('blue'), $name) {
+      @include font-smoothing;
+      --accent-color: var(--blue-dark);
+      --accent-color-text: #fff;
+      --button-bg-color: var(--blue-light);
+      --button-color: var(--blue-dark);
+      --button-hover-bg-color: var(--blue-dark);
+      --button-hover-color: #fff;
+      --button-outline-color: var(--blue-light);
+      --button-outline-hover-color: var(--blue-dark);
+      --theme-link-color: var(--blue-light);
+      --theme-text-color: #fff;
+
+      // Override any custom text colors inside blue backgrounds
+      // (e.g. if authors changed the color in the editor)
+      .has-text-color {
+        color: var(--theme-text-color) !important;
+      }
+    }
+    // Update colors for LIGHT backgrounds
+    @else {
+      --theme-text-color: var(--default-text-color);
+
+      // Reset colors when a parent wrapper has a background color class
+      // (i.e. a white group block inside of a dark-background block)
+      .has-background & {
+        // FIXME: Reset button and link colors to defaults
+        // --button-bg-color: var(--fixme);
+        // --button-bg-color-hover: var(--fixme);
+        // --button-color: var(--fixme);
+        // --button-color-hover: var(--fixme);
+        // --input-border-color: var(--fixme);
+        // --theme-link-color: var(--fixme);
+        --theme-text-color: var(--default-text-color);
+      }
+    }
+  }
+}
